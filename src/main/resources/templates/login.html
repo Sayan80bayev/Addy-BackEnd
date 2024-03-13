@@ -20,12 +20,9 @@
                   class="img-fluid" alt="Phone image">
               </div>
               <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-                <form action="/register" method="post" th:object="${user}">
+                <form action="/login" method="post" th:object="${user}">
                   <!-- Email input -->
-                  <div class="form-outline mb-4">
-                      <input type="text" id="username" class="form-control form-control-lg" th:field="*{username}" />
-                      <label class="form-label" for="username">Name</label>
-                    </div>
+
                   <div class="form-outline mb-4">
                     <input type="email" id="email" class="form-control form-control-lg" th:field="*{email}" />
                     <label class="form-label" for="email">Email address</label>
@@ -47,7 +44,7 @@
                   </div>
         
                   <!-- Submit button -->
-                  <button type="submit" class="btn btn-primary btn-lg btn-block ml-5">Sign in</button>
+                  <button type="submit" class="btn btn-primary btn-lg btn-block ml-5">Log in</button>
         
                 </form>
               </div>
