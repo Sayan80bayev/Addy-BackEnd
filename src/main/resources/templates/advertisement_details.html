@@ -121,9 +121,16 @@
                   <img src="" alt="" height="250px" width="400px">
                   <h5 class="card-title" th:text="${advertisement.title}">Title</h5>
                   <p class="card-text" th:text="${advertisement.description}">Description</p>
-                  <a th:href="@{/edit/{id}(id=${advertisement.id})}" class="btn btn-info me-2">Edit</a>
-                  <a th:href="@{/delete/{id}(id=${advertisement.id})}" class="btn btn-danger">Delete</a>
+
+                  <span th:if="${user_id} == ${advertisement.user.id}">
+                    <a th:href="@{/edit/{id}(id=${advertisement.id})}" class="btn btn-info me-2">Edit</a>
+                    <form th:action="@{/delete}" style="display: table-row;" method="post">
+                      <input type="hidden" th:name = "add_id" th:value="${advertisement.id}">
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                  </span>
                   <a th:href="@{/}" class="btn btn-secondary">Back to list</a>
+
                 </div>
               </div>
             </div>

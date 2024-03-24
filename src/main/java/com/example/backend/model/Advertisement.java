@@ -2,10 +2,14 @@ package com.example.backend.model;
 
 import java.time.LocalDateTime;
 
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Advertisement {
@@ -15,7 +19,18 @@ public class Advertisement {
     private String title;
     private String description;
     private LocalDateTime date;
-    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public Advertisement() {
         this.date = LocalDateTime.now();
     }

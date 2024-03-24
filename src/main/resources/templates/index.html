@@ -128,10 +128,17 @@
           <div class="product-device product-device-2 shadow-sm d-none d-md-block"></div>
         </div>
         <div class="container">
-          <div th:if="${param.success}" style="width: 48%;">
-            <p class="alert alert-info">
-              successfully deleted
-            </p>
+          <div style="width: 48%;">
+            <div th:if="${param.success}" >
+              <p class="alert alert-info">
+                Successfully deleted
+              </p>
+            </div>
+            <div th:if="${param.acsErr}">
+              <p class="alert alert-danger">
+                No access for this page!
+              </p>
+            </div>
           </div>
           <div class="row">
             <div class="col-md-12">

@@ -17,8 +17,8 @@
             <div class="mb-3">
                 <label for="title" class="form-label">Title:</label>
                 <input type="text" id="title" th:field="*{title}" class="form-control" required>
+                <input type="hidden" id="user" th:name="user" th:id="*{user}" th:value="${user_id}"  class="form-control">
             </div>
-
             <div class="mb-3">
                 <label for="description" class="form-label">Description:</label>
                 <textarea id="description" th:field="*{description}" class="form-control" required></textarea>
