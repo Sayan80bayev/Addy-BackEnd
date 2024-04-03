@@ -14,6 +14,7 @@ import com.example.backend.service.AdvertisementService;
 public class MainController {
     @Autowired
     private AdvertisementService service;
+
     @GetMapping("/")
     public String viewHomePage(Model model) {
         List<Advertisement> listAdvertisements = service.findAll();

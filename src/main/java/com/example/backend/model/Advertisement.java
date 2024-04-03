@@ -2,7 +2,6 @@ package com.example.backend.model;
 
 import java.time.LocalDateTime;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +19,7 @@ public class Advertisement {
     private String description;
     private LocalDateTime date;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     public User getUser() {
@@ -38,7 +37,7 @@ public class Advertisement {
     public Advertisement(String title, String description) {
         this.title = title;
         this.description = description;
-        this.date = LocalDateTime.now(); 
+        this.date = LocalDateTime.now();
     }
 
     // Getters and Setters

@@ -1,4 +1,5 @@
 package com.example.backend.model;
+
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -8,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-
 
 @Entity
 public class User {
@@ -20,7 +20,7 @@ public class User {
     private String password;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Advertisement> advertisements;
-    
+
     public Long getId() {
         return this.id;
     }
@@ -52,6 +52,5 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
 
 }

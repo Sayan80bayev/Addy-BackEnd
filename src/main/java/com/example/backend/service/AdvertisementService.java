@@ -28,4 +28,3 @@ public class AdvertisementService {
         repository.deleteById(id);
     }
 }
-

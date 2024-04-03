@@ -8,77 +8,50 @@ import com.example.backend.service.UserService;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api")
 public class AdvertisementController {
     @Autowired
     private AdvertisementService service;
     @Autowired
     private UserService userService;
-    @Autowired 
+    @Autowired
     private HttpSession session;
 
-    @GetMapping("/new")
-    public String showNewAdvertisementForm(Model model) {
-        if(userService.checkAuth()){
-            Advertisement advertisement = new Advertisement();
-            model.addAttribute("advertisement", advertisement);
-            model.addAttribute("user_id", (Long) session.getAttribute("user"));
-            return "new_advertisement";
-        }else
-            return "redirect:/login?err";
-    }
-
     @PostMapping("/save")
-    public String saveAdvertisement(@ModelAttribute("advertisement") Advertisement advertisement) {
-        service.save(advertisement);
-        return "redirect:/";
-    }
-
-
-    @GetMapping("/edit/{id}")
-    public String showEditAdvertisementForm(@PathVariable("id") Long id, Model model) {
-        if(userService.checkAuth()){
-            Advertisement advertisement = service.findById(id);
-            if (advertisement.getUser().getId() == session.getAttribute("user")) {
-                model.addAttribute("advertisement", advertisement);
-                model.addAttribute("user_id", (Long) session.getAttribute("user"));
-                return "edit_advertisement";
-            }else{
-                return "redirect:/?acsErr";
-            }
-        }else
-            return "redirect:/login?err";
-    }
-    @GetMapping("/view/{id}")
-    public String viewAdvertisement(@PathVariable("id") Long id, Model model) {
-        Advertisement advertisement = service.findById(id);
-        if (advertisement == null) {
-            return "redirect:/";
+    public ResponseEntity<String> saveAdvertisement(@ModelAttribute("advertisement") Advertisement advertisement,
+            HttpSession session) {
+        if (!userService.checkAuth()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Unauthorized: You must be logged in to perform this action.");
         }
-        model.addAttribute("advertisement", advertisement);
-        model.addAttribute("user_id", (Long) session.getAttribute("user"));
-        return "advertisement_details";
+        Long sessionUser = (Long) session.getAttribute("user");
+        if (sessionUser == null || !sessionUser.equals(advertisement.getUser().getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Forbidden: You can only save advertisements associated with your account.");
+        }
+
+        service.save(advertisement);
+
+        return ResponseEntity.ok("SUCCESS: Advertisement saved successfully.");
     }
 
     @PostMapping("/delete")
-    public String deleteAdvertisement(@RequestParam("add_id") Long id) {
-        if(userService.checkAuth()){
-            Advertisement advertisement = service.findById(id);
-            User user = advertisement.getUser();
-            if ( user.getId() == (Long) session.getAttribute("user")) {
-                service.deleteById(id);
-                return "redirect:/?success";
-            }else{
-                return "redirect:/?acsErr";
-            }
-        }else{
-            return "redirect:/login?err";
-        }
+    public ResponseEntity<String> deleteAdvertisement(@RequestParam("add_id") Long id) {
+        if (!userService.checkAuth())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Unauthorized: You must be logged in to perform this action.");
+        Advertisement advertisement = service.findById(id);
+        User user = advertisement.getUser();
+        if (user.getId() != (Long) session.getAttribute("user"))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Forbidden: You can only save advertisements associated with your account.");
+        service.deleteById(id);
+        return ResponseEntity.ok().body("SUCCESS: Successfully deleted");
     }
 }
-
-
