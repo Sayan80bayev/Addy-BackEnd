@@ -21,7 +21,9 @@ public class SecurityConfiguration {
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-                http
+                http.formLogin(form -> form
+                                .loginPage("http://localhost:3000/login")
+                                .permitAll())
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .cors(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(authz -> authz
