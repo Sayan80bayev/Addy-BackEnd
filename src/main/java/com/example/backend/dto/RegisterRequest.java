@@ -6,9 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class JwtResponse {
-    private String token;
+public class RegisterRequest {
+
+    private String username;
+    private String email;
+    private String password;
 }
