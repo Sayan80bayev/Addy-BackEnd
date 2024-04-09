@@ -1,63 +1,72 @@
-// package com.example.backend.controller;
+package com.example.backend.controller;
 
-// import com.example.backend.model.Advertisement;
-// import com.example.backend.model.User;
-// import com.example.backend.service.AdvertisementService;
-// import com.example.backend.service.UserService;
+import com.example.backend.dto.AdvertisementDTO;
+import com.example.backend.model.Advertisement;
+import com.example.backend.model.User;
+import com.example.backend.service.AdvertisementService;
+import com.example.backend.service.CategoryService;
+import com.example.backend.service.UserService;
 
-// import jakarta.servlet.http.HttpSession;
+import java.time.LocalDateTime;
+import java.util.List;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.HttpStatus;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-// @RestController
+@RestController
 // @CrossOrigin(origins = "http://localhost:3000")
-// @RequestMapping("/api")
-// public class AdvertisementController {
-// @Autowired
-// private AdvertisementService service;
-// @Autowired
-// private UserService userService;
-// @Autowired
-// private HttpSession session;
+@RequestMapping("/api/secured")
+public class AdvertisementController {
+    @Autowired
+    private AdvertisementService service;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private CategoryService catService;
 
-// @PostMapping("/save")
-// public ResponseEntity<String>
-// saveAdvertisement(@ModelAttribute("advertisement") Advertisement
-// advertisement,
-// HttpSession session) {
-// if (!userService.checkAuth()) {
-// return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-// .body("Unauthorized: You must be logged in to perform this action.");
-// }
-// Long sessionUser = (Long) session.getAttribute("user");
-// if (sessionUser == null ||
-// !sessionUser.equals(advertisement.getUser().getId())) {
-// return ResponseEntity.status(HttpStatus.FORBIDDEN)
-// .body("Forbidden: You can only save advertisements associated with your
-// account.");
-// }
+    @PostMapping("/create")
+    public ResponseEntity<?> saveAdvertisement(@RequestBody AdvertisementDTO aDto) {
+        Advertisement advertisement = Advertisement
+                .builder()
+                .title(aDto.getTitle())
+                .description(aDto.getDescription())
+                .category(catService.findById(aDto.getCategory_id()))
+                .user(userService.findById(aDto.getUser_id()))
+                .date(LocalDateTime.now())
+                .views(0L)
+                .build();
+        try {
+            service.save(advertisement);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "");
+        }
+        return ResponseEntity.ok().body("SUCCESS");
+    }
 
-// service.save(advertisement);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteAdvertisement(@PathVariable("id") Long id) {
+        try {
+            service.deleteById(id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "");
+        }
+        return ResponseEntity.ok().body("SUCCESS");
+    }
 
-// return ResponseEntity.ok("SUCCESS: Advertisement saved successfully.");
-// }
-
-// @PostMapping("/delete")
-// public ResponseEntity<String> deleteAdvertisement(@RequestParam("add_id")
-// Long id) {
-// if (!userService.checkAuth())
-// return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-// .body("Unauthorized: You must be logged in to perform this action.");
-// Advertisement advertisement = service.findById(id);
-// User user = advertisement.getUser();
-// if (user.getId() != (Long) session.getAttribute("user"))
-// return ResponseEntity.status(HttpStatus.FORBIDDEN)
-// .body("Forbidden: You can only save advertisements associated with your
-// account.");
-// service.deleteById(id);
-// return ResponseEntity.ok().body("SUCCESS: Successfully deleted");
-// }
-// }
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<?> editAdvertisement(@PathVariable("id") Long id, @RequestBody AdvertisementDTO aDto) {
+        Advertisement advertisement = service.findById(id);
+        advertisement.setTitle(aDto.getTitle());
+        advertisement.setDescription(aDto.getDescription());
+        advertisement.setPrice(aDto.getPrice());
+        advertisement.setCategory(catService.findById(aDto.getCategory_id()));
+        try {
+            service.save(advertisement);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "");
+        }
+        return ResponseEntity.ok().body("SUCCESS");
+    }
+}

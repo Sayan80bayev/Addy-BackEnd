@@ -27,8 +27,8 @@ public class SecurityConfiguration {
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .cors(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(authz -> authz
-                                                .requestMatchers("/index").authenticated()
-                                                .requestMatchers("api/v1/auth/**").permitAll()
+                                                .requestMatchers("/api/cat/**").authenticated()
+                                                .requestMatchers("/api/v1/auth/**").permitAll()
                                                 .anyRequest().permitAll())
                                 .sessionManagement(
                                                 (sessionManagement) -> sessionManagement
