@@ -46,6 +46,7 @@ public class AdvertisementService {
                 .title(advertisement.getTitle())
                 .price(advertisement.getPrice())
                 .views(advertisement.getViews())
+                .category_id(advertisement.getCategory().getId())
                 .user_id(advertisement.getUser().getId())
                 .build();
         return advertisementDTO;

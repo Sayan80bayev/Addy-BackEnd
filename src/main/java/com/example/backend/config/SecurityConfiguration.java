@@ -28,8 +28,9 @@ public class SecurityConfiguration {
                                 .cors(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(authz -> authz
                                                 .requestMatchers("/api/cat/**").authenticated()
+                                                .requestMatchers("/api/secured/**").authenticated()
                                                 .requestMatchers("/api/v1/auth/**").permitAll()
-                                                .anyRequest().permitAll())
+                                                .anyRequest())
                                 .sessionManagement(
                                                 (sessionManagement) -> sessionManagement
                                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

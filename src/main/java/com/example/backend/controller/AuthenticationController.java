@@ -13,7 +13,7 @@ import com.example.backend.dto.JwtResponse;
 import com.example.backend.dto.RegisterRequest;
 import com.example.backend.service.AuthenticationService;
 
-// @CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")

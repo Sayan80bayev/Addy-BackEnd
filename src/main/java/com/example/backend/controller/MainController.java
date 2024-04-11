@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,13 @@ public class MainController {
     public List<AdvertisementDTO> getAdds() {
         List<Advertisement> adds = aService.findAll();
         return adds.stream().map(add -> aService.mapToDto(add)).collect(Collectors.toList());
+    }
+
+    @GetMapping("/add/{id}")
+    public AdvertisementDTO getAddById(@PathVariable("id") Long id) {
+        Advertisement add = aService.findById(id);
+
+        return aService.mapToDto(add);
     }
 
     @GetMapping("/getCats")

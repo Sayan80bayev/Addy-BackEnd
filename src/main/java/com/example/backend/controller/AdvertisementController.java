@@ -8,7 +8,6 @@ import com.example.backend.service.CategoryService;
 import com.example.backend.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +33,7 @@ public class AdvertisementController {
                 .description(aDto.getDescription())
                 .category(catService.findById(aDto.getCategory_id()))
                 .user(userService.findById(aDto.getUser_id()))
+                .price(aDto.getPrice())
                 .date(LocalDateTime.now())
                 .views(0L)
                 .build();
