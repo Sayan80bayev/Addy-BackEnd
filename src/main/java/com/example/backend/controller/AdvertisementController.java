@@ -78,12 +78,18 @@ public class AdvertisementController {
     }
 
     @PutMapping("/edit/{id}")
-    public ResponseEntity<?> editAdvertisement(@PathVariable("id") Long id, @RequestBody AdvertisementDTO aDto) {
+    public ResponseEntity<?> editAdvertisement(@PathVariable("id") Long id,
+            @RequestPart("advertisement") AdvertisementDTO aDto,
+            @RequestPart("files") List<MultipartFile> files) {
         Advertisement advertisement = service.findById(id);
         advertisement.setTitle(aDto.getTitle());
         advertisement.setDescription(aDto.getDescription());
         advertisement.setPrice(aDto.getPrice());
         advertisement.setCategory(catService.findById(aDto.getCategory_id()));
+        if (files != null) {
+            advertisement.setImages(files);
+        }
+        advertisement.setImages(null);
         try {
             service.save(advertisement);
         } catch (Exception e) {

@@ -2,8 +2,6 @@ package com.example.backend.dto;
 
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.example.backend.model.Image;
 
 import lombok.Builder;
