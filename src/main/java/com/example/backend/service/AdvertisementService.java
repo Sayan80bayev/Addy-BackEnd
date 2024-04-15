@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.config.JwtService;
 import com.example.backend.dto.AdvertisementDTO;
 import com.example.backend.model.Advertisement;
 import com.example.backend.repository.AdvertisementRepository;
@@ -12,6 +13,8 @@ import java.util.List;
 public class AdvertisementService {
     @Autowired
     private AdvertisementRepository repository;
+    @Autowired
+    private JwtService jService;
 
     public List<Advertisement> findAll() {
         return repository.findAll();
