@@ -5,6 +5,7 @@ import com.example.backend.model.Advertisement;
 import com.example.backend.repository.AdvertisementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -48,6 +49,7 @@ public class AdvertisementService {
                 .views(advertisement.getViews())
                 .category_id(advertisement.getCategory().getId())
                 .user_id(advertisement.getUser().getId())
+                .images(advertisement.getImages())
                 .build();
         return advertisementDTO;
     }

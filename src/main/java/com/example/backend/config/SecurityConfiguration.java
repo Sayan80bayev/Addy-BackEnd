@@ -30,7 +30,7 @@ public class SecurityConfiguration {
                                                 .requestMatchers("/api/cat/**").authenticated()
                                                 .requestMatchers("/api/secured/**").authenticated()
                                                 .requestMatchers("/api/v1/auth/**").permitAll()
-                                                .anyRequest())
+                                                .anyRequest().permitAll())
                                 .sessionManagement(
                                                 (sessionManagement) -> sessionManagement
                                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

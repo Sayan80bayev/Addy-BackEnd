@@ -7,12 +7,16 @@ import com.example.backend.service.AdvertisementService;
 import com.example.backend.service.CategoryService;
 import com.example.backend.service.UserService;
 
+import io.jsonwebtoken.io.IOException;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 // @CrossOrigin(origins = "http://localhost:3000")
@@ -26,9 +30,9 @@ public class AdvertisementController {
     private CategoryService catService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> saveAdvertisement(@RequestBody AdvertisementDTO aDto) {
-        Advertisement advertisement = Advertisement
-                .builder()
+    public ResponseEntity<?> saveAdvertisement(@RequestPart("advertisement") AdvertisementDTO aDto,
+            @RequestPart("files") List<MultipartFile> files) {
+        Advertisement advertisement = Advertisement.builder()
                 .title(aDto.getTitle())
                 .description(aDto.getDescription())
                 .category(catService.findById(aDto.getCategory_id()))
@@ -37,12 +41,30 @@ public class AdvertisementController {
                 .date(LocalDateTime.now())
                 .views(0L)
                 .build();
+
+        // Handle file uploads
+        for (MultipartFile file : files) {
+            try {
+                // Process each file, for example, save to a location
+                // You may want to set up a service for handling file storage
+                // file.transferTo(new File("/path/to/uploaded/files/" +
+                // file.getOriginalFilename()));
+            } catch (IOException e) {
+                // Handle the exception
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("File upload failed: " + e.getMessage());
+            }
+        }
+
+        advertisement.setImages(files); // Assuming you have a method in Advertisement to set images
+
         try {
             service.save(advertisement);
+            return ResponseEntity.ok().body("SUCCESS");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Advertisement creation failed: " + e.getMessage());
         }
-        return ResponseEntity.ok().body("SUCCESS");
     }
 
     @DeleteMapping("/delete/{id}")

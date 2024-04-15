@@ -1,9 +1,16 @@
 package com.example.backend.model;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +43,10 @@ public class Advertisement {
     @JsonBackReference
     private Category category;
     private Long views;
+    @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
+    // This transient field is used for handling multipart file uploads
+    private transient List<MultipartFile> imageFiles;
 
     public Advertisement() {
         this.date = LocalDateTime.now();
@@ -47,4 +59,29 @@ public class Advertisement {
         this.date = LocalDateTime.now();
     }
 
+    public void setImages(List<MultipartFile> imageFiles) {
+        this.imageFiles = imageFiles;
+
+        if (this.images == null) {
+            this.images = new ArrayList<>();
+        } else {
+            this.images.clear(); // Clear existing images
+        }
+
+        if (imageFiles != null) {
+            for (MultipartFile file : imageFiles) {
+                try {
+                    // Process each file and convert it to Image entity
+                    Image image = new Image();
+                    image.setImageData(file.getBytes()); // Save file content as byte array or stream
+                    image.setAdvertisement(this); // Set advertisement reference
+                    // Set other image properties if needed
+                    this.images.add(image);
+                } catch (IOException e) {
+                    // Handle the exception
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
