@@ -1,15 +1,11 @@
 package com.example.backend.controller;
 
-import com.example.backend.config.JwtService;
 import com.example.backend.dto.AdvertisementDTO;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.User;
 import com.example.backend.service.AdvertisementService;
 import com.example.backend.service.CategoryService;
 import com.example.backend.service.ImageService;
-import com.example.backend.service.UserService;
-
-import io.jsonwebtoken.io.IOException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,26 +19,26 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-// @CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3000/newAdd" })
 @RequestMapping("/api/secured")
 public class AdvertisementController {
     @Autowired
     private AdvertisementService service;
     @Autowired
-    private UserService userService;
-    @Autowired
     private CategoryService catService;
     @Autowired
     private ImageService iService;
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = "multipart/form-data")
     public ResponseEntity<?> saveAdvertisement(@RequestPart("advertisement") AdvertisementDTO aDto,
             @RequestPart("files") List<MultipartFile> files) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
         Advertisement advertisement = Advertisement.builder()
                 .title(aDto.getTitle())
                 .description(aDto.getDescription())
-                .category(catService.findById(aDto.getCategory_id()))
-                .user(userService.findById(aDto.getUser_id()))
+                .category(catService.findById(aDto.getCategory().getCategory_id()))
+                .user(currentUser)
                 .price(aDto.getPrice())
                 .date(LocalDateTime.now())
                 .views(0L)
@@ -86,7 +82,7 @@ public class AdvertisementController {
         advertisement.setTitle(aDto.getTitle());
         advertisement.setDescription(aDto.getDescription());
         advertisement.setPrice(aDto.getPrice());
-        advertisement.setCategory(catService.findById(aDto.getCategory_id()));
+        advertisement.setCategory(catService.findById(aDto.getCategory().getCategory_id()));
 
         if (files.isEmpty()) {
             advertisement.setImages(null);

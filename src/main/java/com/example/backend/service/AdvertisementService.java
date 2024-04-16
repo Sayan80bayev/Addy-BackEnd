@@ -2,19 +2,23 @@ package com.example.backend.service;
 
 import com.example.backend.config.JwtService;
 import com.example.backend.dto.AdvertisementDTO;
+import com.example.backend.dto.ImageDTO;
 import com.example.backend.model.Advertisement;
+import com.example.backend.model.Image;
 import com.example.backend.repository.AdvertisementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdvertisementService {
     @Autowired
     private AdvertisementRepository repository;
     @Autowired
-    private JwtService jService;
+    private CategoryService cService;
 
     public List<Advertisement> findAll() {
         return repository.findAll();
@@ -26,6 +30,14 @@ public class AdvertisementService {
 
     public Advertisement findById(Long id) {
         return repository.findById(id).orElse(null);
+    }
+
+    public List<AdvertisementDTO> findByName(String name) {
+        return repository.findByTitle(name).stream().map(a -> mapToDto(a)).collect(Collectors.toList());
+    }
+
+    public List<AdvertisementDTO> findByCategory(Long id) {
+        return repository.findByCategoryId(id).stream().map(aDto -> mapToDto(aDto)).collect(Collectors.toList());
     }
 
     public void deleteById(Long id) {
@@ -49,10 +61,26 @@ public class AdvertisementService {
                 .title(advertisement.getTitle())
                 .price(advertisement.getPrice())
                 .views(advertisement.getViews())
-                .category_id(advertisement.getCategory().getId())
+                .category(cService.mapToDTO(advertisement.getCategory()))
                 .user_id(advertisement.getUser().getId())
-                .images(advertisement.getImages())
                 .build();
+        List<ImageDTO> imageDTOs = advertisement.getImages().stream().map(image -> toDTO(image))
+                .collect(Collectors.toList());
+        advertisementDTO.setImages(imageDTOs);
         return advertisementDTO;
+    }
+
+    public static ImageDTO toDTO(Image image) {
+        ImageDTO dto = new ImageDTO();
+        dto.setId(image.getId());
+        dto.setImageData(image.getImageData());
+        return dto;
+    }
+
+    public static Image toEntity(ImageDTO dto) {
+        Image entity = new Image();
+        entity.setId(dto.getId());
+        entity.setImageData(dto.getImageData());
+        return entity;
     }
 }

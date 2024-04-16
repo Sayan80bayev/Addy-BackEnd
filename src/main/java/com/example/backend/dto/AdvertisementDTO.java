@@ -2,8 +2,6 @@ package com.example.backend.dto;
 
 import java.util.List;
 
-import com.example.backend.model.Image;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,8 +12,8 @@ public class AdvertisementDTO {
     private Double price;
     private String title;
     private String description;
-    private Long category_id;
+    private CategoryDTO category;
     private Long user_id;
     private Long views;
-    private List<Image> images;
+    private List<ImageDTO> images;
 }
