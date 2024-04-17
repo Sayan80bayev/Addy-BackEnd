@@ -13,7 +13,7 @@ public class AdvertisementDTO {
     private String title;
     private String description;
     private CategoryDTO category;
-    private Long user_id;
+    private String email;
     private Long views;
     private List<ImageDTO> images;
 }

@@ -9,7 +9,6 @@ import com.example.backend.repository.AdvertisementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,7 +61,7 @@ public class AdvertisementService {
                 .price(advertisement.getPrice())
                 .views(advertisement.getViews())
                 .category(cService.mapToDTO(advertisement.getCategory()))
-                .user_id(advertisement.getUser().getId())
+                .email(advertisement.getUser().getEmail())
                 .build();
         List<ImageDTO> imageDTOs = advertisement.getImages().stream().map(image -> toDTO(image))
                 .collect(Collectors.toList());

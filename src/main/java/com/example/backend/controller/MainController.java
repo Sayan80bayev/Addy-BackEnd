@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.AdvertisementDTO;
 import com.example.backend.dto.CategoryDTO;
+import com.example.backend.dto.PermissionToEditDelete;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
+import com.example.backend.model.User;
 import com.example.backend.service.AdvertisementService;
 import com.example.backend.service.CategoryService;
 
@@ -45,10 +52,9 @@ public class MainController {
     }
 
     @GetMapping("/add/{id}")
-    public AdvertisementDTO getAddById(@PathVariable("id") Long id) {
+    public ResponseEntity<?> getAddById(@PathVariable("id") Long id) {
         Advertisement add = aService.findById(id);
-
-        return aService.mapToDto(add);
+        return ResponseEntity.ok(aService.mapToDto(add));
     }
 
     @GetMapping("/getCats")

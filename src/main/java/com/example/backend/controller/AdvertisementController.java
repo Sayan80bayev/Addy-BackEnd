@@ -59,6 +59,13 @@ public class AdvertisementController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteAdvertisement(@PathVariable("id") Long id) {
+        Advertisement advertisement = service.findById(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
+        if (!advertisement.getUser().getId().equals(currentUser.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You don't have permission to edit this advertisement.");
+        }
         try {
             service.deleteById(id);
         } catch (Exception e) {
@@ -70,7 +77,7 @@ public class AdvertisementController {
     @PutMapping("/edit/{id}")
     public ResponseEntity<?> editAdvertisement(@PathVariable("id") Long id,
             @RequestPart("advertisement") AdvertisementDTO aDto,
-            @RequestPart("files") List<MultipartFile> files) {
+            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         Advertisement advertisement = service.findById(id);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
@@ -83,8 +90,8 @@ public class AdvertisementController {
         advertisement.setDescription(aDto.getDescription());
         advertisement.setPrice(aDto.getPrice());
         advertisement.setCategory(catService.findById(aDto.getCategory().getCategory_id()));
-
-        if (files.isEmpty()) {
+        advertisement.setImages(files);
+        if (files == null) {
             advertisement.setImages(null);
         } else {
             String result = iService.validateAndSaveImages(files);
