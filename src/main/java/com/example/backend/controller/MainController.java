@@ -4,25 +4,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.AdvertisementDTO;
 import com.example.backend.dto.CategoryDTO;
-import com.example.backend.dto.PermissionToEditDelete;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
-import com.example.backend.model.User;
 import com.example.backend.service.AdvertisementService;
 import com.example.backend.service.CategoryService;
 
@@ -54,6 +47,8 @@ public class MainController {
     @GetMapping("/add/{id}")
     public ResponseEntity<?> getAddById(@PathVariable("id") Long id) {
         Advertisement add = aService.findById(id);
+        add.setViews(add.getViews() + 1);
+        aService.save(add);
         return ResponseEntity.ok(aService.mapToDto(add));
     }
 
@@ -61,5 +56,11 @@ public class MainController {
     public List<CategoryDTO> getAll() {
         List<Category> catList = cService.findAll();
         return catList.stream().map(category -> cService.mapToDTO(category)).collect(Collectors.toList());
+    }
+
+    @GetMapping("/getSimilars")
+    public List<AdvertisementDTO> getSimilars(@RequestParam("cat") Long cat_id, @RequestParam("price") double price,
+            @RequestParam("id") Long id) {
+        return aService.findSimilars(cat_id, price, id);
     }
 }

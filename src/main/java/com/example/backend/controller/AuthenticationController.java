@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend.dto.JwtRequest;
 import com.example.backend.dto.JwtResponse;
 import com.example.backend.dto.RegisterRequest;
+import com.example.backend.model.User;
 import com.example.backend.service.AuthenticationService;
+import com.example.backend.service.UserService;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -20,10 +22,15 @@ import com.example.backend.service.AuthenticationService;
 public class AuthenticationController {
 
     private final AuthenticationService service;
+    private final UserService uService;
 
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(
+    public ResponseEntity<?> register(
             @RequestBody RegisterRequest request) {
+        User user = uService.findByEmail(request.getEmail());
+        if (user != null) {
+            return ResponseEntity.badRequest().body("User already exists");
+        }
         return ResponseEntity.ok(service.register(request));
     }
 

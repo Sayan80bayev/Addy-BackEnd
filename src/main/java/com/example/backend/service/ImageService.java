@@ -52,7 +52,7 @@ public class ImageService {
             }
 
             long fileSizeInMB = file.getSize() / (1024 * 1024); // Convert bytes to MB
-            if (fileSizeInMB > 5) { // Assuming max file size is 5 MB
+            if (fileSizeInMB > 20) { // Assuming max file size is 5 MB
                 return "File size exceeds the maximum limit of 5MB.";
             }
         }

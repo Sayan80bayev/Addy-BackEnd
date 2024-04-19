@@ -44,7 +44,6 @@ public class Advertisement {
     private Long views;
     @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
-    // This transient field is used for handling multipart file uploads
     private transient List<MultipartFile> imageFiles;
 
     public Advertisement() {
@@ -64,17 +63,15 @@ public class Advertisement {
         if (this.images == null) {
             this.images = new ArrayList<>();
         } else {
-            this.images.clear(); // Clear existing images
+            this.images.clear();
         }
 
         if (imageFiles != null) {
             for (MultipartFile file : imageFiles) {
                 try {
-                    // Process each file and convert it to Image entity
                     Image image = new Image();
                     image.setImageData(file.getBytes()); // Save file content as byte array or stream
                     image.setAdvertisement(this); // Set advertisement reference
-                    // Set other image properties if needed
                     this.images.add(image);
                 } catch (IOException e) {
                     // Handle the exception
