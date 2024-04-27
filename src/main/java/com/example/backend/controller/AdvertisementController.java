@@ -86,6 +86,7 @@ public class AdvertisementController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("You don't have permission to edit this advertisement.");
         }
+
         advertisement.setTitle(aDto.getTitle());
         advertisement.setDescription(aDto.getDescription());
         advertisement.setPrice(aDto.getPrice());

@@ -30,6 +30,11 @@ public class MainController {
 
     @GetMapping("/getAdds")
     public List<AdvertisementDTO> getAdds() {
+        try {
+            Thread.sleep(2000);
+        } catch (Exception exception) {
+
+        }
         List<Advertisement> adds = aService.findAll();
         return adds.stream().map(add -> aService.mapToDto(add)).collect(Collectors.toList());
     }
