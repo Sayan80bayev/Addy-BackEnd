@@ -31,7 +31,7 @@ public class MainController {
     @GetMapping("/getAdds")
     public List<AdvertisementDTO> getAdds() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (Exception exception) {
 
         }

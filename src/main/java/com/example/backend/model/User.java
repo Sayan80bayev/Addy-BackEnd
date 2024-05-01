@@ -37,7 +37,7 @@ public class User implements UserDetails {
     private String password;
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Advertisement> advertisements;
-
+    private byte[] avatar;
     @Enumerated(EnumType.STRING)
     private Role role;
 
