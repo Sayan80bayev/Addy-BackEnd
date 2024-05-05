@@ -29,6 +29,7 @@ public class SecurityConfiguration {
                                                 .requestMatchers("/api/cat/**").authenticated()
                                                 .requestMatchers("/api/secured/**").authenticated()
                                                 .requestMatchers("/api/v1/auth/**").permitAll()
+                                                .requestMatchers("/user/get/**").permitAll()
                                                 .anyRequest().permitAll())
                                 .sessionManagement(
                                                 (sessionManagement) -> sessionManagement
