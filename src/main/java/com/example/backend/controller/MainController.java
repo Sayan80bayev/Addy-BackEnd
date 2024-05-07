@@ -19,7 +19,6 @@ import com.example.backend.model.Category;
 import com.example.backend.service.AdvertisementService;
 import com.example.backend.service.CategoryService;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/v1/public")
 public class MainController {

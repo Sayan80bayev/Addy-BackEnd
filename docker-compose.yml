@@ -5,8 +5,8 @@ services:
     image: postgres
     container_name: postgre
     ports:
-      - "2000:5432" # corrected port mapping syntax
-    environment: 
+      - "2000:5432"
+    environment:
       POSTGRES_PASSWORD: postgre
       POSTGRES_USER: postgres
       POSTGRES_DB: postgre
@@ -19,5 +19,3 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgre:5432/postgre
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgre
-
-      network_mode: host

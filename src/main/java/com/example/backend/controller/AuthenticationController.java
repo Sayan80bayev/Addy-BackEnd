@@ -15,7 +15,6 @@ import com.example.backend.model.User;
 import com.example.backend.service.AuthenticationService;
 import com.example.backend.service.UserService;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")

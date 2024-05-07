@@ -1,5 +1,7 @@
 package com.example.backend.config;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -9,6 +11,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +30,7 @@ public class SecurityConfiguration {
                                 .loginPage("http://localhost:3000/login")
                                 .permitAll())
                                 .csrf(AbstractHttpConfigurer::disable)
+                                // .cors(cors -> cors)
                                 .authorizeHttpRequests(authz -> authz
                                                 .requestMatchers("/api/cat/**").authenticated()
                                                 .requestMatchers("/api/secured/**").authenticated()
@@ -39,4 +45,5 @@ public class SecurityConfiguration {
 
                 return http.build();
         }
+
 }

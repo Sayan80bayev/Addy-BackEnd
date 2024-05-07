@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3000/newAdd" })
 @RequestMapping("/api/secured")
 public class AdvertisementController {
     @Autowired

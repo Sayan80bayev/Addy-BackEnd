@@ -17,7 +17,6 @@ import com.example.backend.model.Category;
 import com.example.backend.dto.*;
 import com.example.backend.service.CategoryService;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/cat")
 public class CategoryController {

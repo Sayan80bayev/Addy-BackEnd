@@ -8,9 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -62,10 +60,17 @@ public class UserController {
 
         try {
             // Check if current password matches the one stored in the database
-            if (!passwordEncoder.matches(uDto.getPassword(), user.getPassword())) {
+            if (uDto.getPassword() != null && !passwordEncoder.matches(uDto.getPassword(), user.getPassword())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Incorrect current password");
             }
+
+            // Check if the new password is null when the old password is provided
+            if (uDto.getNewPassword() == null && uDto.getPassword() != null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("New password cannot be null if the old password is provided");
+            }
+
             // Check if the new password is different from the old one
             if (uDto.getNewPassword() != null && !uDto.getNewPassword().isEmpty() &&
                     uDto.getNewPassword().equals(uDto.getPassword())) {
@@ -76,7 +81,8 @@ public class UserController {
             // Check if there are any changes to update
             if (uDto.getName().equals(user.getName()) &&
                     (avatar == null || avatar.isEmpty()) &&
-                    (uDto.getNewPassword() == null || uDto.getNewPassword().isEmpty())) {
+                    (uDto.getNewPassword() == null
+                            || passwordEncoder.matches(uDto.getNewPassword(), user.getPassword()))) {
                 return ResponseEntity.ok().body("No changes to update");
             }
 
