@@ -1,70 +1,53 @@
 package com.example.backend.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.controller.facades.MainFacade;
 import com.example.backend.dto.AdvertisementDTO;
 import com.example.backend.dto.CategoryDTO;
-import com.example.backend.model.Advertisement;
-import com.example.backend.model.Category;
-import com.example.backend.service.AdvertisementService;
-import com.example.backend.service.CategoryService;
 
 @RestController
 @RequestMapping("/api/v1/public")
 public class MainController {
     @Autowired
-    private AdvertisementService aService;
-    @Autowired
-    private CategoryService cService;
+    private MainFacade facade;
 
     @GetMapping("/getAdds")
     public List<AdvertisementDTO> getAdds() {
-        try {
-            Thread.sleep(1000);
-        } catch (Exception exception) {
-
-        }
-        List<Advertisement> adds = aService.findAll();
-        return adds.stream().map(add -> aService.mapToDto(add)).collect(Collectors.toList());
+        return facade.getAdds();
     }
 
     @GetMapping("/search/{name}")
     public List<AdvertisementDTO> search(@PathVariable("name") String name) {
-        return aService.findByName(name);
+        return facade.search(name);
     }
 
     @GetMapping("/cat/{id}")
     public List<AdvertisementDTO> getByCat(@PathVariable("id") Long id) {
-        return aService.findByCategory(id);
+        return facade.getByCat(id);
     }
 
     @GetMapping("/add/{id}")
     public ResponseEntity<?> getAddById(@PathVariable("id") Long id) {
-        Advertisement add = aService.findById(id);
-        add.setViews(add.getViews() + 1);
-        aService.save(add);
-        return ResponseEntity.ok(aService.mapToDto(add));
+        return facade.getAddById(id);
     }
 
     @GetMapping("/getCats")
     public List<CategoryDTO> getAll() {
-        List<Category> catList = cService.findAll();
-        return catList.stream().map(category -> cService.mapToDTO(category)).collect(Collectors.toList());
+        return facade.getAll();
     }
 
     @GetMapping("/getSimilars")
     public List<AdvertisementDTO> getSimilars(@RequestParam("cat") Long cat_id, @RequestParam("price") double price,
             @RequestParam("id") Long id) {
-        return aService.findSimilars(cat_id, price, id);
+        return facade.getSimilars(cat_id, price, id);
     }
+
 }
