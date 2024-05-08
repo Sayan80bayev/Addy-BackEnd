@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.controller.facades.AdvertisementFacade;
 import com.example.backend.dto.AdvertisementDTO;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,4 +34,8 @@ public class AdvertisementController {
         return facade.editAdvertisement(id, aDto, files);
     }
 
+    @PostMapping("/subscribe")
+    public ResponseEntity<?> subscribe(@RequestBody String email) {
+        return ResponseEntity.ok().body(null);
+    }
 }

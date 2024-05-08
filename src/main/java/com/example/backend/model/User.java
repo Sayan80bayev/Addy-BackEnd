@@ -33,6 +33,8 @@ public class User implements UserDetails {
     private byte[] avatar;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @ManyToMany(mappedBy = "followers")
+    private List<Advertisement> followedAdds;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

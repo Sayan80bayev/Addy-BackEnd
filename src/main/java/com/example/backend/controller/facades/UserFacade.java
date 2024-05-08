@@ -44,15 +44,17 @@ public class UserFacade {
     }
 
     public ResponseEntity<?> updateUser(UserDTO userDTO, MultipartFile avatar) {
-        User user = userService.findByEmail(userDTO.getEmail());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
 
-        if (!userDTO.getEmail().equals(user.getEmail())) {
+        if (!userDTO.getEmail().equals(currentUser.getEmail())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("NO_ACCESS");
         }
 
         try {
             // Checking password
-            if (userDTO.getPassword() != null && !passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
+            if (userDTO.getPassword() != null
+                    && !passwordEncoder.matches(userDTO.getPassword(), currentUser.getPassword())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Incorrect current password");
             }
 
@@ -70,27 +72,27 @@ public class UserFacade {
             }
 
             // Checking for changes
-            if (userDTO.getName().equals(user.getName()) &&
+            if (userDTO.getName().equals(currentUser.getName()) &&
                     (avatar == null || avatar.isEmpty()) &&
                     (userDTO.getNewPassword() == null
-                            || passwordEncoder.matches(userDTO.getNewPassword(), user.getPassword()))) {
+                            || passwordEncoder.matches(userDTO.getNewPassword(), currentUser.getPassword()))) {
                 return ResponseEntity.ok().body("No changes to update");
             }
 
             // Updating user details
-            if (!userDTO.getName().equals(user.getName())) {
-                user.setName(userDTO.getName());
+            if (!userDTO.getName().equals(currentUser.getName())) {
+                currentUser.setName(userDTO.getName());
             }
 
             if (avatar != null && !avatar.isEmpty()) {
-                user.setAvatar(avatar.getBytes());
+                currentUser.setAvatar(avatar.getBytes());
             }
 
             if (userDTO.getNewPassword() != null && !userDTO.getNewPassword().isEmpty()) {
-                user.setPassword(passwordEncoder.encode(userDTO.getNewPassword()));
+                currentUser.setPassword(passwordEncoder.encode(userDTO.getNewPassword()));
             }
 
-            userService.saveUser(user);
+            userService.saveUser(currentUser);
             return ResponseEntity.ok().body("SUCCESS");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

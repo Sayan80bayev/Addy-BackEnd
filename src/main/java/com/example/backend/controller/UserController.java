@@ -21,7 +21,7 @@ public class UserController {
     @Autowired
     private UserFacade facade;
 
-    @GetMapping("/get")
+    @GetMapping("/get/getUser")
     public ResponseEntity<?> getUser(@RequestParam String email) {
         return facade.getUser(email);
     }

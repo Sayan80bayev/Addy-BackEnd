@@ -17,9 +17,12 @@ import com.example.backend.model.User;
 import com.example.backend.service.AdvertisementService;
 import com.example.backend.service.CategoryService;
 import com.example.backend.service.ImageService;
+import com.example.backend.service.UserService;
 
 @Component
 public class AdvertisementFacade {
+    @Autowired
+    private UserService userService;
     @Autowired
     private AdvertisementService service;
     @Autowired
@@ -100,6 +103,17 @@ public class AdvertisementFacade {
             service.save(advertisement);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "");
+        }
+        return ResponseEntity.ok().body("SUCCESS");
+    }
+
+    public ResponseEntity<?> subscribe(String email, Long id) {
+        User user = userService.findByEmail(email);
+        Advertisement add = service.findById(id);
+        try {
+            service.addFollower(user, add);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e);
         }
         return ResponseEntity.ok().body("SUCCESS");
     }

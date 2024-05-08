@@ -28,9 +28,10 @@ public class SecurityConfiguration {
                                 .authorizeHttpRequests(authz -> authz
                                                 .requestMatchers("/api/cat/**").authenticated()
                                                 .requestMatchers("/api/secured/**").authenticated()
+                                                .requestMatchers("/api/v1/public/**").permitAll()
                                                 .requestMatchers("/api/v1/auth/**").permitAll()
                                                 .requestMatchers("/user/get/**").permitAll()
-                                                .anyRequest().permitAll())
+                                                .anyRequest().authenticated())
                                 .sessionManagement(
                                                 (sessionManagement) -> sessionManagement
                                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -5,6 +5,7 @@ import com.example.backend.dto.ImageDTO;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
 import com.example.backend.model.Image;
+import com.example.backend.model.User;
 import com.example.backend.repository.AdvertisementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,8 @@ public class AdvertisementService {
     }
 
     public void deleteById(Long id) {
+        Advertisement add = repository.findById(id).orElse(null);
+        notifyUsers(add.getTitle());
         repository.deleteById(id);
     }
 
@@ -89,5 +92,14 @@ public class AdvertisementService {
         Category cat = cService.findById(cat_id);
         List<Advertisement> advertisement = repository.findSimilars(cat, price, id);
         return advertisement.stream().map(add -> mapToDto(add)).collect(Collectors.toList());
+    }
+
+    public void addFollower(User follower, Advertisement add) {
+        add.setFollowers(follower);
+        save(add);
+    }
+
+    public void notifyUsers(String name) {
+
     }
 }
