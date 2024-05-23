@@ -46,8 +46,8 @@ public class Advertisement {
     @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
     private transient List<MultipartFile> imageFiles;
-    @ManyToMany
-    private List<User> followers = new ArrayList<>();
+    @OneToMany(mappedBy = "ad")
+    private List<UserSubscription> subscriptions = new ArrayList<>();
 
     public Advertisement() {
         this.date = LocalDateTime.now();
@@ -82,9 +82,5 @@ public class Advertisement {
                 }
             }
         }
-    }
-
-    public void setFollowers(User user) {
-        followers.add(user);
     }
 }

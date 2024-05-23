@@ -5,7 +5,9 @@ import com.example.backend.dto.ImageDTO;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
 import com.example.backend.model.Image;
+import com.example.backend.model.Notification;
 import com.example.backend.model.User;
+import com.example.backend.model.UserSubscription;
 import com.example.backend.repository.AdvertisementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class AdvertisementService {
+    @Autowired
+    private NotificationService nService;
     @Autowired
     private AdvertisementRepository repository;
     @Autowired
@@ -42,19 +46,25 @@ public class AdvertisementService {
 
     public void deleteById(Long id) {
         Advertisement add = repository.findById(id).orElse(null);
-        notifyUsers(add.getTitle());
+        // notifyUsers(add.getTitle());
         repository.deleteById(id);
     }
 
-    public Advertisement update(Advertisement advertisement) {
-        Advertisement add = repository.findById(advertisement.getId()).orElse(null);
-        add.setTitle(advertisement.getTitle());
-        add.setDescription(advertisement.getDescription());
-        add.setCategory(advertisement.getCategory());
-        add.setPrice(advertisement.getPrice());
-        add.setDate(advertisement.getDate());
-        return repository.save(add);
+    public void update(Advertisement advertisement) {
+        notifyUsers(advertisement.getSubscriptions(), "Ad has been updated");
+
     }
+    // public Advertisement update(Advertisement advertisement) {
+    // Advertisement add = repository.findById(advertisement.getId()).orElse(null);
+    // add.setTitle(advertisement.getTitle());
+    // add.setDescription(advertisement.getDescription());
+    // add.setCategory(advertisement.getCategory());
+    // add.setPrice(advertisement.getPrice());
+    // add.setDate(advertisement.getDate());
+    // notifyUsers(advertisement.getSubscriptions(), "Ad has been updated");
+    // return repository.save(add);
+
+    // }
 
     public AdvertisementDTO mapToDto(Advertisement advertisement) {
         AdvertisementDTO advertisementDTO = AdvertisementDTO
@@ -94,12 +104,10 @@ public class AdvertisementService {
         return advertisement.stream().map(add -> mapToDto(add)).collect(Collectors.toList());
     }
 
-    public void addFollower(User follower, Advertisement add) {
-        add.setFollowers(follower);
-        save(add);
-    }
-
-    public void notifyUsers(String name) {
-
+    public void notifyUsers(List<UserSubscription> l, String value) {
+        for (int i = 0; i < l.size(); i++) {
+            User cUser = l.get(i).getUser();
+            nService.save(Notification.builder().user(cUser).value(value).build());
+        }
     }
 }

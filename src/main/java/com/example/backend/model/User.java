@@ -1,5 +1,6 @@
 package com.example.backend.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,8 +34,8 @@ public class User implements UserDetails {
     private byte[] avatar;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @ManyToMany(mappedBy = "followers")
-    private List<Advertisement> followedAdds;
+    @OneToMany(mappedBy = "user")
+    private List<UserSubscription> subscriptions = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
