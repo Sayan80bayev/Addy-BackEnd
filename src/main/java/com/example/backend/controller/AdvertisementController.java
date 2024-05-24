@@ -33,9 +33,4 @@ public class AdvertisementController {
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         return facade.editAdvertisement(id, aDto, files);
     }
-
-    @PostMapping("/subscribe")
-    public ResponseEntity<?> subscribe(@RequestBody String email) {
-        return ResponseEntity.ok().body(null);
-    }
 }
