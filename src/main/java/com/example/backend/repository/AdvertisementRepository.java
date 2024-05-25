@@ -16,4 +16,9 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
     List<Advertisement> findSimilars(Category cat, double price, Long id);
 
     List<Advertisement> findByCategoryId(Long id);
+
+    List<Advertisement> findByCategoryIdOrCategoryParentId(Long categoryId, Long parentCategoryId);
+
+    List<Advertisement> findByCategoryIdIn(List<Long> categoryIds);
+
 }

@@ -54,6 +54,18 @@ public class AdvertisementService {
         notifyUsers(advertisement.getSubscriptions(), "Ad has been updated");
 
     }
+
+    public List<AdvertisementDTO> findByCategoryIdOrChildCategoryIds(Long categoryId) {
+        // Получаем все дочерние категории для данной категории
+        List<Long> categoryIds = cService.findAllChildCategoryIds(categoryId);
+        // Добавляем исходную категорию в список
+        categoryIds.add(categoryId);
+        // Ищем объявления по списку идентификаторов категорий
+        List<Advertisement> advertisements = repository.findByCategoryIdIn(categoryIds);
+        return advertisements.stream()
+                .map(a -> mapToDto(a))
+                .collect(Collectors.toList());
+    }
     // public Advertisement update(Advertisement advertisement) {
     // Advertisement add = repository.findById(advertisement.getId()).orElse(null);
     // add.setTitle(advertisement.getTitle());

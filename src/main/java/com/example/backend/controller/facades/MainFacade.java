@@ -36,7 +36,7 @@ public class MainFacade {
     }
 
     public List<AdvertisementDTO> getByCat(Long id) {
-        return aService.findByCategory(id);
+        return aService.findByCategoryIdOrChildCategoryIds(id);
     }
 
     public ResponseEntity<?> getAddById(Long id) {

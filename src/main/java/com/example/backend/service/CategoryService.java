@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -73,5 +74,16 @@ public class CategoryService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid parent category ID"));
         parentCategory.addSubcategory(subcategory);
         repository.save(parentCategory);
+    }
+
+    public List<Long> findAllChildCategoryIds(Long parentId) {
+        List<Long> childCategoryIds = new ArrayList<>();
+        List<Category> childCategories = repository.findByParentId(parentId);
+        for (Category category : childCategories) {
+            childCategoryIds.add(category.getId());
+            List<Long> grandChildCategoryIds = findAllChildCategoryIds(category.getId());
+            childCategoryIds.addAll(grandChildCategoryIds);
+        }
+        return childCategoryIds;
     }
 }
