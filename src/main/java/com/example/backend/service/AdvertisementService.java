@@ -12,6 +12,7 @@ import com.example.backend.repository.AdvertisementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,7 @@ public class AdvertisementService {
     }
 
     public void update(Advertisement advertisement) {
-        notifyUsers(advertisement.getSubscriptions(), "Ad has been updated");
+        notifyUsers(advertisement.getSubscriptions(), advertisement.getTitle() + " has been updated");
 
     }
 
@@ -119,7 +120,8 @@ public class AdvertisementService {
     public void notifyUsers(List<UserSubscription> l, String value) {
         for (int i = 0; i < l.size(); i++) {
             User cUser = l.get(i).getUser();
-            nService.save(Notification.builder().user(cUser).value(value).build());
+            nService.save(
+                    Notification.builder().user(cUser).value(value).seen(false).date(LocalDateTime.now()).build());
         }
     }
 }

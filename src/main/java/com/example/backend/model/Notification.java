@@ -1,5 +1,7 @@
 package com.example.backend.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +18,6 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +26,10 @@ public class Notification {
     @JoinColumn(name = "user_id")
     private User user;
     private String value;
+    private LocalDateTime date;
+    private boolean seen;
+
+    Notification() {
+        this.date = LocalDateTime.now();
+    }
 }
