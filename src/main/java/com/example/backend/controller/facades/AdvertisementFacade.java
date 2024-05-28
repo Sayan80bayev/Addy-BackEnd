@@ -107,15 +107,4 @@ public class AdvertisementFacade {
         }
         return ResponseEntity.ok().body("SUCCESS");
     }
-
-    // public ResponseEntity<?> subscribe(String email, Long id) {
-    // User user = userService.findByEmail(email);
-    // Advertisement add = service.findById(id);
-    // try {
-
-    // } catch (Exception e) {
-    // return ResponseEntity.internalServerError().body(e);
-    // }
-    // return ResponseEntity.ok().body("SUCCESS");
-    // }
 }
