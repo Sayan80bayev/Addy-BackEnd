@@ -13,6 +13,9 @@ import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
 import com.example.backend.service.AdvertisementService;
 import com.example.backend.service.CategoryService;
+import com.example.backend.service.sortStrategy.DateSortingStrategy;
+import com.example.backend.service.sortStrategy.PriceSortingStrategy;
+import com.example.backend.service.sortStrategy.SortingStrategy;
 
 @Component
 public class MainFacade {
@@ -54,5 +57,17 @@ public class MainFacade {
     public List<AdvertisementDTO> getSimilars(Long cat_id, double price,
             Long id) {
         return aService.findSimilars(cat_id, price, id);
+    }
+
+    public ResponseEntity<?> sortAdds(Long id) {
+        SortingStrategy s = null;
+        if (id == 1)
+            s = new DateSortingStrategy();
+        else if (id == 2)
+            s = new PriceSortingStrategy();
+
+        aService.setSortingStrategy(s);
+        return ResponseEntity
+                .ok(aService.findAll().stream().map(a -> aService.mapToDto(a)).collect(Collectors.toList()));
     }
 }

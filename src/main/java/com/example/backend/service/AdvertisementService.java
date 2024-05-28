@@ -9,6 +9,8 @@ import com.example.backend.model.Notification;
 import com.example.backend.model.User;
 import com.example.backend.model.UserSubscription;
 import com.example.backend.repository.AdvertisementRepository;
+import com.example.backend.service.sortStrategy.SortingStrategy;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +26,13 @@ public class AdvertisementService {
     private AdvertisementRepository repository;
     @Autowired
     private CategoryService cService;
+    private SortingStrategy sortingStrategy;
 
     public List<Advertisement> findAll() {
-        return repository.findAll();
+        List<Advertisement> ads = repository.findAll();
+        if (sortingStrategy == null)
+            return ads;
+        return sortingStrategy.sort(ads);
     }
 
     public Advertisement save(Advertisement advertisement) {
@@ -67,17 +73,6 @@ public class AdvertisementService {
                 .map(a -> mapToDto(a))
                 .collect(Collectors.toList());
     }
-    // public Advertisement update(Advertisement advertisement) {
-    // Advertisement add = repository.findById(advertisement.getId()).orElse(null);
-    // add.setTitle(advertisement.getTitle());
-    // add.setDescription(advertisement.getDescription());
-    // add.setCategory(advertisement.getCategory());
-    // add.setPrice(advertisement.getPrice());
-    // add.setDate(advertisement.getDate());
-    // notifyUsers(advertisement.getSubscriptions(), "Ad has been updated");
-    // return repository.save(add);
-
-    // }
 
     public AdvertisementDTO mapToDto(Advertisement advertisement) {
         AdvertisementDTO advertisementDTO = AdvertisementDTO
@@ -123,5 +118,9 @@ public class AdvertisementService {
             nService.save(
                     Notification.builder().user(cUser).value(value).seen(false).date(LocalDateTime.now()).build());
         }
+    }
+
+    public void setSortingStrategy(SortingStrategy sortingStrategy) {
+        this.sortingStrategy = sortingStrategy;
     }
 }
