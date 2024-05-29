@@ -26,7 +26,7 @@ public class SecurityConfiguration {
                                 .csrf(AbstractHttpConfigurer::disable)
                                 // .cors(cors -> cors)
                                 .authorizeHttpRequests(authz -> authz
-                                                .requestMatchers("/api/cat/**").authenticated()
+                                                .requestMatchers("/api/cat/**").hasAuthority("ADMIN")
                                                 .requestMatchers("/api/secured/**").authenticated()
                                                 .requestMatchers("/api/v1/public/**").permitAll()
                                                 .requestMatchers("/api/v1/auth/**").permitAll()
