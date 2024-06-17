@@ -25,11 +25,6 @@ public class MainFacade {
     private CategoryService cService;
 
     public List<AdvertisementDTO> getAdds() {
-        try {
-            Thread.sleep(1000);
-        } catch (Exception exception) {
-
-        }
         List<Advertisement> adds = aService.findAll();
         return adds.stream().map(add -> aService.mapToDto(add)).collect(Collectors.toList());
     }

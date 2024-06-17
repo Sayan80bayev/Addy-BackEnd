@@ -59,7 +59,6 @@ public class AdvertisementService {
 
     public void update(Advertisement advertisement) {
         notifyUsers(advertisement.getSubscriptions(), advertisement.getTitle() + " has been updated");
-
     }
 
     public List<AdvertisementDTO> findByCategoryIdOrChildCategoryIds(Long categoryId) {
