@@ -5,22 +5,34 @@ import com.example.backend.dto.ImageDTO;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
 import com.example.backend.model.Image;
+import com.example.backend.model.Notification;
+import com.example.backend.model.User;
+import com.example.backend.model.UserSubscription;
 import com.example.backend.repository.AdvertisementRepository;
+import com.example.backend.service.sortStrategy.SortingStrategy;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class AdvertisementService {
     @Autowired
+    private NotificationService nService;
+    @Autowired
     private AdvertisementRepository repository;
     @Autowired
     private CategoryService cService;
+    private SortingStrategy sortingStrategy;
 
     public List<Advertisement> findAll() {
-        return repository.findAll();
+        List<Advertisement> ads = repository.findAll();
+        if (sortingStrategy == null)
+            return ads;
+        return sortingStrategy.sort(ads);
     }
 
     public Advertisement save(Advertisement advertisement) {
@@ -40,17 +52,22 @@ public class AdvertisementService {
     }
 
     public void deleteById(Long id) {
+        Advertisement add = repository.findById(id).orElse(null);
+        // notifyUsers(add.getTitle());
         repository.deleteById(id);
     }
 
-    public Advertisement update(Advertisement advertisement) {
-        Advertisement add = repository.findById(advertisement.getId()).orElse(null);
-        add.setTitle(advertisement.getTitle());
-        add.setDescription(advertisement.getDescription());
-        add.setCategory(advertisement.getCategory());
-        add.setPrice(advertisement.getPrice());
-        add.setDate(advertisement.getDate());
-        return repository.save(add);
+    public void update(Advertisement advertisement) {
+        notifyUsers(advertisement.getSubscriptions(), advertisement.getTitle() + " has been updated");
+    }
+
+    public List<AdvertisementDTO> findByCategoryIdOrChildCategoryIds(Long categoryId) {
+        List<Long> categoryIds = cService.findAllChildCategoryIds(categoryId);
+        categoryIds.add(categoryId);
+        List<Advertisement> advertisements = repository.findByCategoryIdIn(categoryIds);
+        return advertisements.stream()
+                .map(a -> mapToDto(a))
+                .collect(Collectors.toList());
     }
 
     public AdvertisementDTO mapToDto(Advertisement advertisement) {
@@ -89,5 +106,17 @@ public class AdvertisementService {
         Category cat = cService.findById(cat_id);
         List<Advertisement> advertisement = repository.findSimilars(cat, price, id);
         return advertisement.stream().map(add -> mapToDto(add)).collect(Collectors.toList());
+    }
+
+    public void notifyUsers(List<UserSubscription> l, String value) {
+        for (int i = 0; i < l.size(); i++) {
+            User cUser = l.get(i).getUser();
+            nService.save(
+                    Notification.builder().user(cUser).value(value).seen(false).date(LocalDateTime.now()).build());
+        }
+    }
+
+    public void setSortingStrategy(SortingStrategy sortingStrategy) {
+        this.sortingStrategy = sortingStrategy;
     }
 }

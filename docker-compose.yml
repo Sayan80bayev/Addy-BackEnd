@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  postgre:
+    image: postgres
+    container_name: postgre
+    ports:
+      - "2000:5432"
+    environment:
+      POSTGRES_PASSWORD: postgre
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgre
+  spring-app:
+    image: test
+    container_name: spring_app
+    ports:
+      - "3001:3001"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgre:5432/postgre
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgre

@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.backend.model.Image;
 import com.example.backend.service.ImageService;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/images")
 public class ImageController {

@@ -35,7 +35,30 @@ public class UserService {
         }
     }
 
-    public void deleteUser(Long id) {
-        repository.deleteById(id);
+    public void deleteUser(User user) {
+        repository.delete(user);
+    }
+
+    public User dtoToEntity(UserDTO userDTO) {
+        if (userDTO == null) {
+            return null;
+        }
+        return User.builder()
+                .name(userDTO.getName())
+                .email(userDTO.getEmail())
+                .password(userDTO.getPassword())
+                .avatar(userDTO.getAvatar())
+                .build();
+    }
+
+    public UserDTO entityToDto(User user) {
+        if (user == null) {
+            return null;
+        }
+        return UserDTO.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .avatar(user.getAvatar())
+                .build();
     }
 }
