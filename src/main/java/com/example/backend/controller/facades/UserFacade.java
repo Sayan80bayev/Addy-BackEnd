@@ -93,7 +93,7 @@ public class UserFacade {
             }
 
             userService.saveUser(currentUser);
-            return ResponseEntity.ok().body("SUCCESS");
+            return ResponseEntity.ok().body("{\"status\":\"SUCCESS\"}");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

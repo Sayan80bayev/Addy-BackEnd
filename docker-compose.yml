@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgre
   spring-app:
-    image: backend
+    image: test
     container_name: spring_app
     ports:
       - "3001:3001"
