@@ -50,11 +50,8 @@ public class AdvertisementFacade {
 
         try {
             service.save(advertisement);
-<<<<<<< HEAD
             return ResponseEntity.ok().body("{\"status\":\"SUCCESS\"}");
-=======
-            return ResponseEntity.ok().body("SUCCESS");
->>>>>>> 1d22e87bdf99d1899bfabbb55cef854843513403
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Advertisement creation failed: " + e.getMessage());
@@ -74,11 +71,8 @@ public class AdvertisementFacade {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "");
         }
-<<<<<<< HEAD
         return ResponseEntity.ok().body("{\"status\":\"SUCCESS\"}");
-=======
-        return ResponseEntity.ok().body("SUCCESS");
->>>>>>> 1d22e87bdf99d1899bfabbb55cef854843513403
+
     }
 
     public ResponseEntity<?> editAdvertisement(Long id,
@@ -113,10 +107,7 @@ public class AdvertisementFacade {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "");
         }
-<<<<<<< HEAD
         return ResponseEntity.ok().body("{\"status\":\"SUCCESS\"}");
-=======
-        return ResponseEntity.ok().body("SUCCESS");
->>>>>>> 1d22e87bdf99d1899bfabbb55cef854843513403
+
     }
 }
