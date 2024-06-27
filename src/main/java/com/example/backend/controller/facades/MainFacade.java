@@ -38,6 +38,7 @@ public class MainFacade {
     }
 
     public ResponseEntity<?> getAddById(Long id) {
+<<<<<<< HEAD
         try {
             Advertisement add = aService.findById(id);
             add.setViews(add.getViews() + 1);
@@ -46,6 +47,12 @@ public class MainFacade {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+=======
+        Advertisement add = aService.findById(id);
+        add.setViews(add.getViews() + 1);
+        aService.save(add);
+        return ResponseEntity.ok(aService.mapToDto(add));
+>>>>>>> 1d22e87bdf99d1899bfabbb55cef854843513403
     }
 
     public List<CategoryDTO> getAll() {

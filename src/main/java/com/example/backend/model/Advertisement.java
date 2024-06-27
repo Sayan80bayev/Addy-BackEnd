@@ -16,6 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -45,11 +46,16 @@ public class Advertisement {
     @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
     private transient List<MultipartFile> imageFiles;
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
     @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL)
     private List<UserSubscription> subscriptions = new ArrayList<>();
 >>>>>>> Stashed changes
+=======
+    @OneToMany(mappedBy = "ad")
+    private List<UserSubscription> subscriptions = new ArrayList<>();
+>>>>>>> 1d22e87bdf99d1899bfabbb55cef854843513403
 
     public Advertisement() {
         this.date = LocalDateTime.now();

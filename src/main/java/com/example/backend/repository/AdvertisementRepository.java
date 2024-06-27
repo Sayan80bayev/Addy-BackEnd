@@ -9,11 +9,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface AdvertisementRepository extends JpaRepository<Advertisement, Long> {
-    @Query("SELECT a FROM Advertisement a WHERE a.title LIKE :title%")
+    @Query("SELECT a FROM Advertisement a WHERE LOWER(a.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Advertisement> findByTitle(String title);
 
     @Query("SELECT a FROM Advertisement a WHERE a.price <= :price * 2 AND a.category = :cat AND a.id != :id")
     List<Advertisement> findSimilars(Category cat, double price, Long id);
 
     List<Advertisement> findByCategoryId(Long id);
+
+    List<Advertisement> findByCategoryIdOrCategoryParentId(Long categoryId, Long parentCategoryId);
+
+    List<Advertisement> findByCategoryIdIn(List<Long> categoryIds);
+
 }
