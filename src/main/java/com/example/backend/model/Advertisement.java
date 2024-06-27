@@ -45,6 +45,11 @@ public class Advertisement {
     @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
     private transient List<MultipartFile> imageFiles;
+<<<<<<< Updated upstream
+=======
+    @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL)
+    private List<UserSubscription> subscriptions = new ArrayList<>();
+>>>>>>> Stashed changes
 
     public Advertisement() {
         this.date = LocalDateTime.now();
