@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,7 +107,11 @@ public class AdvertisementService {
     public List<AdvertisementDTO> findSimilars(Long cat_id, double price, Long id) {
         Category cat = cService.findById(cat_id);
         List<Advertisement> advertisement = repository.findSimilars(cat, price, id);
-        return advertisement.stream().map(add -> mapToDto(add)).collect(Collectors.toList());
+        List<AdvertisementDTO> aDtos = advertisement.stream().map(add -> mapToDto(add)).collect(Collectors.toList());
+        aDtos.stream()
+                .forEach(add -> add.setImages(new ArrayList<>(Collections.singletonList(add.getImages().get(0)))));
+
+        return aDtos;
     }
 
     public void notifyUsers(List<UserSubscription> l, String value) {

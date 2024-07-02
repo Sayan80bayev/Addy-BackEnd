@@ -1,5 +1,7 @@
 package com.example.backend.controller.facades;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +28,10 @@ public class MainFacade {
 
     public List<AdvertisementDTO> getAdds() {
         List<Advertisement> adds = aService.findAll();
-        return adds.stream().map(add -> aService.mapToDto(add)).collect(Collectors.toList());
+        List<AdvertisementDTO> aDtos = adds.stream().map(add -> aService.mapToDto(add)).collect(Collectors.toList());
+        aDtos.stream()
+                .forEach(add -> add.setImages(new ArrayList<>(Collections.singletonList(add.getImages().get(0)))));
+        return aDtos;
     }
 
     public List<AdvertisementDTO> search(String name) {
