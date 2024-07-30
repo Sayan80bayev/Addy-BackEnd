@@ -8,9 +8,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import com.example.backend.dto.AdvertisementDTO;
 import com.example.backend.dto.UserDTO;
+import com.example.backend.model.Advertisement;
 import com.example.backend.model.User;
+import com.example.backend.service.AdvertisementService;
 import com.example.backend.service.UserService;
 
 @Component
@@ -21,6 +26,9 @@ public class UserFacade {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AdvertisementService aService;
 
     public ResponseEntity<?> getUser(String email) {
         UserDTO userDTO = userService.entityToDto(userService.findByEmail(email));
@@ -97,5 +105,12 @@ public class UserFacade {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    public ResponseEntity<?> getUserAds(String email) {
+        User user = userService.findByEmail(email);
+        List<Advertisement> ads = user.getAdvertisements();
+        List<AdvertisementDTO> aDtos = ads.stream().map(ad -> aService.mapToDto(ad)).collect(Collectors.toList());
+        return ResponseEntity.ok().body(aDtos);
     }
 }

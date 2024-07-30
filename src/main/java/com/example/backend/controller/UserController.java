@@ -1,9 +1,11 @@
 package com.example.backend.controller;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,5 +37,10 @@ public class UserController {
     public ResponseEntity<?> updateUser(@RequestPart("user") UserDTO userDTO,
             @RequestPart("avatar") MultipartFile avatar) {
         return facade.updateUser(userDTO, avatar);
+    }
+
+    @GetMapping("/getUserAds/{email}")
+    public ResponseEntity<?> getUserAds(@PathVariable("email") String email) {
+        return facade.getUserAds(email);
     }
 }
