@@ -18,6 +18,7 @@ public class SecurityConfiguration {
         private final JwtAuthenticationFilter jwtAuthFilter;
         private final AuthenticationProvider authenticationProvider;
 
+        // test commit
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http.formLogin(form -> form
