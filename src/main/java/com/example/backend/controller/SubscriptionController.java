@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.backend.dto.SubcribeRequest;
+import com.example.backend.dto.request.SubcribeRequest;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.User;
 import com.example.backend.model.UserSubscription;

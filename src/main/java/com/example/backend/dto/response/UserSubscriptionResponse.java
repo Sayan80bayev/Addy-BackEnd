@@ -1,4 +1,4 @@
-package com.example.backend.dto;
+package com.example.backend.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserSubscriptionDTO {
+public class UserSubscriptionResponse {
     private Long id;
-    private Long user_id;
-    private Long advertisement_id;
+    private Long userId;
+    private Long advertisementId;
 }

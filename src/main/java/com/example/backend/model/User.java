@@ -3,9 +3,12 @@ package com.example.backend.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.example.backend.enums.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +17,6 @@ import lombok.NoArgsConstructor;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import com.example.backend.enums.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,18 +26,17 @@ import com.example.backend.enums.*;
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id = UUID.randomUUID();
     private String name;
     private String email;
     private String password;
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Advertisement> advertisements;
-    private byte[] avatar;
+    private String avatarUrl;
     @Enumerated(EnumType.STRING)
     private Role role;
     @OneToMany(mappedBy = "user")
-    private List<UserSubscription> subscriptions = new ArrayList<>();
+    private List<UserSubscription> subscriptions;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

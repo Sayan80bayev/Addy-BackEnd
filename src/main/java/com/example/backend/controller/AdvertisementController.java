@@ -1,7 +1,8 @@
 package com.example.backend.controller;
 
 import com.example.backend.controller.facades.AdvertisementFacade;
-import com.example.backend.dto.AdvertisementDTO;
+import com.example.backend.dto.response.AdvertisementResponse;
+import com.example.backend.service.AdvertisementService;
 
 import java.util.List;
 
@@ -14,23 +15,23 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/secured")
 public class AdvertisementController {
     @Autowired
-    private AdvertisementFacade facade;
+    private AdvertisementService service;
 
-    @PostMapping(value = "/create", consumes = "multipart/form-data")
-    public ResponseEntity<?> saveAdvertisement(@RequestPart("advertisement") AdvertisementDTO aDto,
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<?> saveAdvertisement(@RequestPart("advertisement") AdvertisementResponse aDto,
             @RequestPart("files") List<MultipartFile> files) {
-        return facade.saveAdvertisement(aDto, files);
+        return service.saveAdvertisement(aDto, files);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAdvertisement(@PathVariable("id") Long id) {
-        return facade.deleteAdvertisement(id);
+        return service.deleteAdvertisement(id);
     }
 
-    @PutMapping("/edit/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> editAdvertisement(@PathVariable("id") Long id,
-            @RequestPart("advertisement") AdvertisementDTO aDto,
+            @RequestPart("advertisement") AdvertisementResponse aDto,
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
-        return facade.editAdvertisement(id, aDto, files);
+        return service.editAdvertisement(id, aDto, files);
     }
 }

@@ -1,42 +1,39 @@
 package com.example.backend.service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.backend.dto.UserSubscriptionDTO;
+import com.example.backend.dto.response.UserSubscriptionResponse;
+import com.example.backend.mapper.UserSubscriptionMapper;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.UserSubscription;
 import com.example.backend.repository.SubscribtionRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class SubscriptionService {
-    @Autowired
-    private SubscribtionRepository repository;
+    private final SubscribtionRepository repository;
+    private final UserSubscriptionMapper mapper;
 
     public void save(UserSubscription u) {
         repository.save(u);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         repository.deleteById(id);
     }
 
-    public void deleteSubs(Long user_id, Long id) {
+    public void deleteSubs(UUID user_id, UUID id) {
         repository.deleteSubs(user_id, id);
     }
 
-    public List<UserSubscriptionDTO> getSubcribtionsByUserID(Long id) {
-        return repository.getSubcribtionsByUserID(id).stream().map(s -> toDTO(s)).collect(Collectors.toList());
-    }
-
-    public UserSubscriptionDTO toDTO(UserSubscription userSubscription) {
-        return UserSubscriptionDTO.builder()
-                .id(userSubscription.getId())
-                .user_id(userSubscription.getUser().getId())
-                .advertisement_id(userSubscription.getAd().getId())
-                .build();
+    public List<UserSubscriptionResponse> getSubcribtionsByUserID(UUID id) {
+        return repository.getSubcribtionsByUserID(id).stream().map(mapper::toResponse).collect(Collectors.toList());
     }
 }

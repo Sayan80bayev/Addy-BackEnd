@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.backend.dto.NotificationDTO;
+import com.example.backend.dto.response.NotificationResponse;
 import com.example.backend.model.Notification;
 import com.example.backend.model.User;
 import com.example.backend.service.NotificationService;
@@ -32,7 +32,7 @@ public class NotificationController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> seen(@RequestBody List<NotificationDTO> nDtos) {
+    public ResponseEntity<?> seen(@RequestBody List<NotificationResponse> nDtos) {
         List<Notification> notifications = new ArrayList<>();
         for (int i = 0; i < nDtos.size(); i++) {
             notifications.add(service.findById(nDtos.get(i).getId()));

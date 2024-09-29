@@ -1,5 +1,7 @@
-package com.example.backend.dto;
+package com.example.backend.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequest {
-
-    private String username;
+public class JwtRequest {
+    @NotNull
     private String email;
+    @NotBlank
     private String password;
 }

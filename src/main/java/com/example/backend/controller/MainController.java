@@ -9,28 +9,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.backend.controller.facades.MainFacade;
-import com.example.backend.dto.AdvertisementDTO;
-import com.example.backend.dto.CategoryDTO;
+import com.example.backend.dto.response.AdvertisementResponse;
+import com.example.backend.dto.response.CategoryResponse;
 
 @RestController
 @RequestMapping("/api/v1/public")
 public class MainController {
-    @Autowired
-    private MainFacade facade;
-
     @GetMapping("/getAdds")
-    public List<AdvertisementDTO> getAdds() {
+    public List<AdvertisementResponse> getAdds() {
         return facade.getAdds();
     }
 
     @GetMapping("/search/{name}")
-    public List<AdvertisementDTO> search(@PathVariable("name") String name) {
+    public List<AdvertisementResponse> search(@PathVariable("name") String name) {
         return facade.search(name);
     }
 
     @GetMapping("/cat/{id}")
-    public List<AdvertisementDTO> getByCat(@PathVariable("id") Long id) {
+    public List<AdvertisementResponse> getByCat(@PathVariable("id") Long id) {
         return facade.getByCat(id);
     }
 
@@ -40,12 +36,13 @@ public class MainController {
     }
 
     @GetMapping("/getCats")
-    public List<CategoryDTO> getAll() {
+    public List<CategoryResponse> getAll() {
         return facade.getAll();
     }
 
     @GetMapping("/getSimilars")
-    public List<AdvertisementDTO> getSimilars(@RequestParam("cat") Long cat_id, @RequestParam("price") double price,
+    public List<AdvertisementResponse> getSimilars(@RequestParam("cat") Long cat_id,
+            @RequestParam("price") double price,
             @RequestParam("id") Long id) {
         return facade.getSimilars(cat_id, price, id);
     }

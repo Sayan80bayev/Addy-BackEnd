@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.backend.dto.UserDTO;
 import com.example.backend.controller.facades.UserFacade;
+import com.example.backend.dto.response.UserResponse;
 
 @RestController
 @RequestMapping("/user")
@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestPart("user") UserDTO userDTO,
+    public ResponseEntity<?> updateUser(@RequestPart("user") UserResponse userDTO,
             @RequestPart("avatar") MultipartFile avatar) {
         return facade.updateUser(userDTO, avatar);
     }

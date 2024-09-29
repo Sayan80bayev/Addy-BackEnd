@@ -1,11 +1,8 @@
 package com.example.backend.model;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.web.multipart.MultipartFile;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -16,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -29,8 +25,7 @@ import lombok.Data;
 @Entity
 public class Advertisement {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id = UUID.randomUUID();
     private String title;
     private String description;
     private Double price;
@@ -43,12 +38,9 @@ public class Advertisement {
     @JsonBackReference
     private Category category;
     private Long views;
-    @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images = new ArrayList<>();
-    private transient List<MultipartFile> imageFiles;
-
+    private List<String> image;
     @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL)
-    private List<UserSubscription> subscriptions = new ArrayList<>();
+    private List<UserSubscription> subscriptions;
 
     public Advertisement() {
         this.date = LocalDateTime.now();
@@ -61,27 +53,4 @@ public class Advertisement {
         this.date = LocalDateTime.now();
     }
 
-    public void setImages(List<MultipartFile> imageFiles) {
-        this.imageFiles = imageFiles;
-
-        if (this.images == null) {
-            this.images = new ArrayList<>();
-        } else {
-            this.images.clear();
-        }
-
-        if (imageFiles != null) {
-            for (MultipartFile file : imageFiles) {
-                try {
-                    Image image = new Image();
-                    image.setImageData(file.getBytes()); // Save file content as byte array or stream
-                    image.setAdvertisement(this); // Set advertisement reference
-                    this.images.add(image);
-                } catch (IOException e) {
-                    // Handle the exception
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 }

@@ -1,11 +1,11 @@
 package com.example.backend.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.backend.dto.UserDTO;
 import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
 
@@ -14,7 +14,7 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
-    public User findById(Long id) {
+    public User findById(UUID id) {
         return repository.findById(id).orElse(null);
     }
 
@@ -39,26 +39,4 @@ public class UserService {
         repository.delete(user);
     }
 
-    public User dtoToEntity(UserDTO userDTO) {
-        if (userDTO == null) {
-            return null;
-        }
-        return User.builder()
-                .name(userDTO.getName())
-                .email(userDTO.getEmail())
-                .password(userDTO.getPassword())
-                .avatar(userDTO.getAvatar())
-                .build();
-    }
-
-    public UserDTO entityToDto(User user) {
-        if (user == null) {
-            return null;
-        }
-        return UserDTO.builder()
-                .name(user.getName())
-                .email(user.getEmail())
-                .avatar(user.getAvatar())
-                .build();
-    }
 }

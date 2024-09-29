@@ -1,33 +1,32 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.AdvertisementDTO;
-import com.example.backend.dto.ImageDTO;
+import com.example.backend.dto.response.AdvertisementResponse;
+import com.example.backend.mapper.AdvertisementMapper;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
-import com.example.backend.model.Image;
 import com.example.backend.model.Notification;
 import com.example.backend.model.User;
 import com.example.backend.model.UserSubscription;
 import com.example.backend.repository.AdvertisementRepository;
 import com.example.backend.service.sortStrategy.SortingStrategy;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AdvertisementService {
-    @Autowired
-    private NotificationService nService;
-    @Autowired
-    private AdvertisementRepository repository;
-    @Autowired
-    private CategoryService cService;
+    private final AdvertisementRepository repository;
+    private final NotificationService nService;
+    private final CategoryService cService;
+    private final AdvertisementMapper mapper;
+
     private SortingStrategy sortingStrategy;
 
     public List<Advertisement> findAll() {
@@ -41,76 +40,35 @@ public class AdvertisementService {
         return repository.save(advertisement);
     }
 
-    public Advertisement findById(Long id) {
+    public Advertisement findById(UUID id) {
         return repository.findById(id).orElse(null);
     }
 
-    public List<AdvertisementDTO> findByName(String name) {
-        return repository.findByTitle(name).stream().map(a -> mapToDto(a)).collect(Collectors.toList());
+    public List<AdvertisementResponse> findByName(String name) {
+        return repository.findByTitle(name).stream().map(a -> mapper.toResponse(a)).collect(Collectors.toList());
     }
 
-    public List<AdvertisementDTO> findByCategory(Long id) {
-        return repository.findByCategoryId(id).stream().map(aDto -> mapToDto(aDto)).collect(Collectors.toList());
+    public List<AdvertisementResponse> findByCategory(UUID id) {
+        return repository.findByCategoryId(id).stream().map(a -> mapper.toResponse(a)).collect(Collectors.toList());
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         Advertisement add = repository.findById(id).orElse(null);
         // notifyUsers(add.getTitle());
         repository.deleteById(id);
     }
 
-    public void update(Advertisement advertisement) {
-        notifyUsers(advertisement.getSubscriptions(), advertisement.getTitle() + " has been updated");
-    }
-
-    public List<AdvertisementDTO> findByCategoryIdOrChildCategoryIds(Long categoryId) {
-        List<Long> categoryIds = cService.findAllChildCategoryIds(categoryId);
+    public List<AdvertisementResponse> findByCategoryIdOrChildCategoryIds(UUID categoryId) {
+        List<UUID> categoryIds = cService.findAllChildCategoryIds(categoryId);
         categoryIds.add(categoryId);
         List<Advertisement> advertisements = repository.findByCategoryIdIn(categoryIds);
-        return advertisements.stream()
-                .map(a -> mapToDto(a))
-                .collect(Collectors.toList());
+        return advertisements.stream().map(mapper::toResponse).collect(Collectors.toList());
     }
 
-    public AdvertisementDTO mapToDto(Advertisement advertisement) {
-        AdvertisementDTO advertisementDTO = AdvertisementDTO
-                .builder()
-                .id(advertisement.getId())
-                .description(advertisement.getDescription())
-                .title(advertisement.getTitle())
-                .price(advertisement.getPrice())
-                .views(advertisement.getViews())
-                .category(cService.mapToDTO(advertisement.getCategory()))
-                .email(advertisement.getUser().getEmail())
-                .date(advertisement.getDate())
-                .build();
-        List<ImageDTO> imageDTOs = advertisement.getImages().stream().map(image -> toDTO(image))
-                .collect(Collectors.toList());
-        advertisementDTO.setImages(imageDTOs);
-        return advertisementDTO;
-    }
-
-    public static ImageDTO toDTO(Image image) {
-        ImageDTO dto = new ImageDTO();
-        dto.setId(image.getId());
-        dto.setImageData(image.getImageData());
-        return dto;
-    }
-
-    public static Image toEntity(ImageDTO dto) {
-        Image entity = new Image();
-        entity.setId(dto.getId());
-        entity.setImageData(dto.getImageData());
-        return entity;
-    }
-
-    public List<AdvertisementDTO> findSimilars(Long cat_id, double price, Long id) {
+    public List<AdvertisementResponse> findSimilars(UUID cat_id, double price, UUID id) {
         Category cat = cService.findById(cat_id);
         List<Advertisement> advertisement = repository.findSimilars(cat, price, id);
-        List<AdvertisementDTO> aDtos = advertisement.stream().map(add -> mapToDto(add)).collect(Collectors.toList());
-        aDtos.stream()
-                .forEach(add -> add.setImages(new ArrayList<>(Collections.singletonList(add.getImages().get(0)))));
-
+        List<AdvertisementResponse> aDtos = advertisement.stream().map(mapper::toResponse).collect(Collectors.toList());
         return aDtos;
     }
 

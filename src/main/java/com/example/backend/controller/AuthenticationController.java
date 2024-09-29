@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.backend.dto.JwtRequest;
-import com.example.backend.dto.JwtResponse;
-import com.example.backend.dto.RegisterRequest;
+import com.example.backend.dto.request.JwtRequest;
+import com.example.backend.dto.request.RegisterRequest;
+import com.example.backend.dto.response.JwtResponse;
 import com.example.backend.model.User;
 import com.example.backend.service.AuthenticationService;
 import com.example.backend.service.UserService;

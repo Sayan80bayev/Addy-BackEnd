@@ -1,9 +1,9 @@
 package com.example.backend.service;
 
 import com.example.backend.config.JwtService;
-import com.example.backend.dto.JwtResponse;
-import com.example.backend.dto.RegisterRequest;
-import com.example.backend.dto.JwtRequest;
+import com.example.backend.dto.request.JwtRequest;
+import com.example.backend.dto.request.RegisterRequest;
+import com.example.backend.dto.response.JwtResponse;
 import com.example.backend.enums.Role;
 import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
