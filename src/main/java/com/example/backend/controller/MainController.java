@@ -15,25 +15,6 @@ import com.example.backend.dto.response.CategoryResponse;
 @RestController
 @RequestMapping("/api/v1/public")
 public class MainController {
-    @GetMapping("/getAdds")
-    public List<AdvertisementResponse> getAdds() {
-        return facade.getAdds();
-    }
-
-    @GetMapping("/search/{name}")
-    public List<AdvertisementResponse> search(@PathVariable("name") String name) {
-        return facade.search(name);
-    }
-
-    @GetMapping("/cat/{id}")
-    public List<AdvertisementResponse> getByCat(@PathVariable("id") Long id) {
-        return facade.getByCat(id);
-    }
-
-    @GetMapping("/add/{id}")
-    public ResponseEntity<?> getAddById(@PathVariable("id") Long id) {
-        return facade.getAddById(id);
-    }
 
     @GetMapping("/getCats")
     public List<CategoryResponse> getAll() {

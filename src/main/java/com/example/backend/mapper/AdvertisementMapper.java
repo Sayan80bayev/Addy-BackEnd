@@ -22,8 +22,8 @@ public interface AdvertisementMapper {
     @Mapping(target = "id", ignore = true) // ID is auto-generated
     @Mapping(target = "date", expression = "java(java.time.LocalDateTime.now())") // Set current time for date
     @Mapping(target = "views", constant = "0L") // Default views to 0
-    @Mapping(target = "user", source = "userId", qualifiedByName = "mapUserFromId")
-    @Mapping(target = "category", source = "categoryId", qualifiedByName = "mapCategoryFromId")
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "category", ignore = true)
     Advertisement toEntity(AdvertisementRequest advertisementRequest);
 
     // Mapping Advertisement Entity to AdvertisementResponse

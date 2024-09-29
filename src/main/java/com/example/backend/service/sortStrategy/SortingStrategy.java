@@ -2,8 +2,8 @@ package com.example.backend.service.sortStrategy;
 
 import java.util.List;
 
-import com.example.backend.model.Advertisement;
+import com.example.backend.dto.response.AdvertisementResponse;
 
 public interface SortingStrategy {
-    List<Advertisement> sort(List<Advertisement> ads);
+    List<AdvertisementResponse> sort(List<AdvertisementResponse> ads);
 }

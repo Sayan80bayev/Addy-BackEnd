@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.dto.request.AdvertisementRequest;
 import com.example.backend.dto.response.AdvertisementResponse;
 import com.example.backend.mapper.AdvertisementMapper;
 import com.example.backend.model.Advertisement;
@@ -12,7 +13,10 @@ import com.example.backend.service.sortStrategy.SortingStrategy;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AdvertisementService {
+    private final UserService userService;
     private final AdvertisementRepository repository;
     private final NotificationService nService;
     private final CategoryService cService;
@@ -29,19 +34,59 @@ public class AdvertisementService {
 
     private SortingStrategy sortingStrategy;
 
-    public List<Advertisement> findAll() {
-        List<Advertisement> ads = repository.findAll();
+    public List<AdvertisementResponse> findAll() {
+        List<AdvertisementResponse> ads = repository.findAll().stream().map(mapper::toResponse)
+                .collect(Collectors.toList());
         if (sortingStrategy == null)
             return ads;
         return sortingStrategy.sort(ads);
     }
 
-    public Advertisement save(Advertisement advertisement) {
+    private Advertisement save(Advertisement advertisement) {
         return repository.save(advertisement);
     }
 
-    public Advertisement findById(UUID id) {
-        return repository.findById(id).orElse(null);
+    public AdvertisementResponse createAdvertisement(AdvertisementRequest advertisementRequest,
+            List<MultipartFile> images) {
+        Advertisement advertisement = mapper.toEntity(advertisementRequest);
+        Category category = cService.findById(advertisementRequest.getCategoryId());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User userDetails = (User) authentication.getPrincipal(); // Assume you have UserDetailsImpl
+        String email = userDetails.getEmail(); // Method to retrieve the email from UserDetails
+
+        User user = userService.findByEmail(email); // Assuming userService can find users by email
+
+        advertisement.setUser(user);
+        advertisement.setCategory(category);
+
+        advertisement = this.save(advertisement);
+        return mapper.toResponse(advertisement);
+    }
+
+    public AdvertisementResponse updateAdvertisement(AdvertisementRequest advertisementRequest,
+            List<MultipartFile> images, UUID advertisementId) {
+        Advertisement existingAdvertisement = repository.findById(advertisementId).orElseThrow(() -> null);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userDetails = (User) authentication.getPrincipal(); // Assume you have UserDetailsImpl
+        String email = userDetails.getEmail(); // Method to retrieve the email from UserDetails
+
+        boolean isEmailEqual = email.equals(existingAdvertisement.getUser().getEmail());
+
+        Advertisement newAdvertisement = mapper.toEntity(advertisementRequest);
+        Category category = cService.findById(advertisementRequest.getCategoryId());
+
+        newAdvertisement.setCategory(category);
+        newAdvertisement = this.save(newAdvertisement);
+
+        return mapper.toResponse(newAdvertisement);
+    }
+
+    public AdvertisementResponse findById(UUID id) {
+        Advertisement advertisement = repository.findById(id).orElseThrow();
+        return mapper.toResponse(advertisement);
     }
 
     public List<AdvertisementResponse> findByName(String name) {
