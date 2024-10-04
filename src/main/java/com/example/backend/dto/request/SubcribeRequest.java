@@ -1,5 +1,7 @@
 package com.example.backend.dto.request;
 
+import java.util.UUID;
+
 import io.micrometer.common.lang.NonNull;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubcribeRequest {
     @NonNull
-    Long id;
+    UUID id;
     @NotBlank
     String email;
 }

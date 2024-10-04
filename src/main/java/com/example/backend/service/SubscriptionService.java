@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SubscriptionService {
     private final SubscribtionRepository repository;
-    private final UserSubscriptionMapper mapper;
+    private final UserSubscriptionMapper mapper = Mappers.getMapper(UserSubscriptionMapper.class);
 
     public void save(UserSubscription u) {
         repository.save(u);

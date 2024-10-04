@@ -1,5 +1,7 @@
 package com.example.backend.dto.response;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserSubscriptionResponse {
-    private Long id;
-    private Long userId;
-    private Long advertisementId;
+    private UUID id;
+    private UUID userId;
+    private UUID advertisementId;
 }

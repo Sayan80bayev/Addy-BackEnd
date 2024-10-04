@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository repository;
-    private final CategoryMapper categoryMapper;
+    private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
 
     public List<CategoryResponse> findAll() {
 

@@ -16,13 +16,13 @@ import com.example.backend.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
+import org.mapstruct.factory.Mappers;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AdvertisementService {
-    private final AdvertisementMapper mapper;
+    private final AdvertisementMapper mapper = Mappers.getMapper(AdvertisementMapper.class);
 
     private final AdvertisementRepository repository;
     private final UserRepository userRepository;
@@ -67,8 +67,18 @@ public class AdvertisementService {
 
         Advertisement advertisement = mapper.toEntity(advertisementRequest);
 
+        List<String> imagesUrl = images.stream().map(i -> {
+            try {
+                return fileService.saveFile(i);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).collect(Collectors.toList());
+
         advertisement.setUser(user);
         advertisement.setCategory(category);
+        advertisement.setImage(imagesUrl);
 
         advertisement = this.save(advertisement);
         return mapper.toResponse(advertisement);
@@ -76,7 +86,9 @@ public class AdvertisementService {
 
     public AdvertisementResponse updateAdvertisement(AdvertisementRequest advertisementRequest,
             List<MultipartFile> images, UUID advertisementId) {
-        Advertisement existingAdvertisement = repository.findById(advertisementId).orElseThrow(() -> null);
+
+        Advertisement existingAdvertisement = repository.findById(advertisementId).orElseThrow(
+                () -> new EntityNotFoundException("Advertisement with id: " + advertisementId + " not found"));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -94,6 +106,7 @@ public class AdvertisementService {
 
         Advertisement newAdvertisement = mapper.toEntity(advertisementRequest);
 
+        List<UserSubscription> subscribers = existingAdvertisement.getSubscriptions();
         List<String> imagesUrl = images.stream().map(i -> {
             try {
                 return fileService.saveFile(i);
@@ -105,7 +118,10 @@ public class AdvertisementService {
 
         newAdvertisement.setCategory(category);
         newAdvertisement.setImage(imagesUrl);
+        newAdvertisement.setSubscriptions(subscribers);
         newAdvertisement = this.save(newAdvertisement);
+
+        nService.notifySubscribers(email, subscribers);
 
         return mapper.toResponse(newAdvertisement);
     }
@@ -146,11 +162,11 @@ public class AdvertisementService {
         return aDtos;
     }
 
-    public void notifyUsers(List<UserSubscription> l, String value) {
-        for (int i = 0; i < l.size(); i++) {
-            User cUser = l.get(i).getUser();
-            nService.save(
-                    Notification.builder().user(cUser).value(value).seen(false).date(LocalDateTime.now()).build());
-        }
-    }
+    // public void notifyUsers(List<UserSubscription> l, String value) {
+    // for (int i = 0; i < l.size(); i++) {
+    // User cUser = l.get(i).getUser();
+    // nService.save(
+    // Notification.builder().user(cUser).value(value).seen(false).date(LocalDateTime.now()).build());
+    // }
+    // }
 }

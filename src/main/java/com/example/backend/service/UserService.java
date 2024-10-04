@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.mapstruct.factory.Mappers;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository repository;
-    private final UserMapper userMapper;
+    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
     private final PasswordEncoder passwordEncoder;
 
     public UserResponse findById(UUID id) {

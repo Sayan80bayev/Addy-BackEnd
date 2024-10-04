@@ -1,6 +1,7 @@
 package com.example.backend.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NotificationResponse {
-    Long id;
+    UUID id;
     String value;
     LocalDateTime date;
 }

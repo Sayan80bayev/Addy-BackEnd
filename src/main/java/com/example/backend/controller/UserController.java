@@ -51,8 +51,8 @@ public class UserController {
         return ResponseEntity.ok("");
     }
 
-    @GetMapping("/getUserAds/{email}")
-    public ResponseEntity<?> getUserAds(@PathVariable("email") String email) {
-        return service.getUserAds(email);
-    }
+    // @GetMapping("/getUserAds/{email}")
+    // public ResponseEntity<?> getUserAds(@PathVariable("email") String email) {
+    // return service.getUserAds(email);
+    // }
 }
