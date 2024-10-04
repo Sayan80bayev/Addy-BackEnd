@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend.dto.request.JwtRequest;
 import com.example.backend.dto.request.RegisterRequest;
 import com.example.backend.dto.response.JwtResponse;
-import com.example.backend.model.User;
+import com.example.backend.dto.response.UserResponse;
 import com.example.backend.service.AuthenticationService;
 import com.example.backend.service.UserService;
 
@@ -25,7 +25,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<?> register(
             @RequestBody RegisterRequest request) {
-        User user = uService.findByEmail(request.getEmail());
+        UserResponse user = uService.findByEmail(request.getEmail());
         if (user != null) {
             return ResponseEntity.badRequest().body("User already exists");
         }

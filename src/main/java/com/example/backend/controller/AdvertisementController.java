@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/advertisements")
+@RequestMapping("/api/v1/advertisements")
 public class AdvertisementController {
     @Autowired
     private AdvertisementService service;
@@ -52,6 +53,13 @@ public class AdvertisementController {
     @GetMapping("/search/{name}")
     public List<AdvertisementResponse> search(@PathVariable("name") String name) {
         return service.findByName(name);
+    }
+
+    @GetMapping("/similars")
+    public List<AdvertisementResponse> getSimilars(@RequestParam("cat") UUID catId,
+            @RequestParam("price") double price,
+            @RequestParam("id") UUID id) {
+        return service.findSimilars(catId, price, id);
     }
 
     @GetMapping("/cat/{id}")

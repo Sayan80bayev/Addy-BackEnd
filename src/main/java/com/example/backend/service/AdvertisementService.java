@@ -2,6 +2,7 @@ package com.example.backend.service;
 
 import com.example.backend.dto.request.AdvertisementRequest;
 import com.example.backend.dto.response.AdvertisementResponse;
+import com.example.backend.exception.ForbiddenException;
 import com.example.backend.mapper.AdvertisementMapper;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
@@ -9,8 +10,10 @@ import com.example.backend.model.Notification;
 import com.example.backend.model.User;
 import com.example.backend.model.UserSubscription;
 import com.example.backend.repository.AdvertisementRepository;
-import com.example.backend.service.sortStrategy.SortingStrategy;
+import com.example.backend.repository.CategoryRepository;
+import com.example.backend.repository.UserRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.core.Authentication;
@@ -18,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -26,20 +30,20 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AdvertisementService {
-    private final UserService userService;
-    private final AdvertisementRepository repository;
-    private final NotificationService nService;
-    private final CategoryService cService;
     private final AdvertisementMapper mapper;
 
-    private SortingStrategy sortingStrategy;
+    private final AdvertisementRepository repository;
+    private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
+
+    private final FileService fileService;
+    private final CategoryService cService;
+    private final NotificationService nService;
 
     public List<AdvertisementResponse> findAll() {
         List<AdvertisementResponse> ads = repository.findAll().stream().map(mapper::toResponse)
                 .collect(Collectors.toList());
-        if (sortingStrategy == null)
-            return ads;
-        return sortingStrategy.sort(ads);
+        return ads;
     }
 
     private Advertisement save(Advertisement advertisement) {
@@ -48,15 +52,20 @@ public class AdvertisementService {
 
     public AdvertisementResponse createAdvertisement(AdvertisementRequest advertisementRequest,
             List<MultipartFile> images) {
-        Advertisement advertisement = mapper.toEntity(advertisementRequest);
-        Category category = cService.findById(advertisementRequest.getCategoryId());
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User userDetails = (User) authentication.getPrincipal(); // Assume you have UserDetailsImpl
-        String email = userDetails.getEmail(); // Method to retrieve the email from UserDetails
+        User userDetails = (User) authentication.getPrincipal();
+        String email = userDetails.getEmail();
 
-        User user = userService.findByEmail(email); // Assuming userService can find users by email
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User with email: " + email + " not found"));
+
+        UUID categoryId = advertisementRequest.getCategoryId();
+
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new EntityNotFoundException("Category with id: " + categoryId.toString() + " not found"));
+
+        Advertisement advertisement = mapper.toEntity(advertisementRequest);
 
         advertisement.setUser(user);
         advertisement.setCategory(category);
@@ -70,15 +79,32 @@ public class AdvertisementService {
         Advertisement existingAdvertisement = repository.findById(advertisementId).orElseThrow(() -> null);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         User userDetails = (User) authentication.getPrincipal(); // Assume you have UserDetailsImpl
         String email = userDetails.getEmail(); // Method to retrieve the email from UserDetails
 
         boolean isEmailEqual = email.equals(existingAdvertisement.getUser().getEmail());
 
+        if (!isEmailEqual)
+            throw new ForbiddenException("You're not allowed to edit this ad!");
+
+        UUID categoryId = advertisementRequest.getCategoryId();
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new EntityNotFoundException("Category with id: " + categoryId.toString() + " not found"));
+
         Advertisement newAdvertisement = mapper.toEntity(advertisementRequest);
-        Category category = cService.findById(advertisementRequest.getCategoryId());
+
+        List<String> imagesUrl = images.stream().map(i -> {
+            try {
+                return fileService.saveFile(i);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).collect(Collectors.toList());
 
         newAdvertisement.setCategory(category);
+        newAdvertisement.setImage(imagesUrl);
         newAdvertisement = this.save(newAdvertisement);
 
         return mapper.toResponse(newAdvertisement);
@@ -110,10 +136,13 @@ public class AdvertisementService {
         return advertisements.stream().map(mapper::toResponse).collect(Collectors.toList());
     }
 
-    public List<AdvertisementResponse> findSimilars(UUID cat_id, double price, UUID id) {
-        Category cat = cService.findById(cat_id);
+    public List<AdvertisementResponse> findSimilars(UUID catId, double price, UUID id) {
+        Category cat = categoryRepository.findById(catId)
+                .orElseThrow(() -> new EntityNotFoundException("Category with id: " + catId + " not found"));
+
         List<Advertisement> advertisement = repository.findSimilars(cat, price, id);
         List<AdvertisementResponse> aDtos = advertisement.stream().map(mapper::toResponse).collect(Collectors.toList());
+
         return aDtos;
     }
 
@@ -123,9 +152,5 @@ public class AdvertisementService {
             nService.save(
                     Notification.builder().user(cUser).value(value).seen(false).date(LocalDateTime.now()).build());
         }
-    }
-
-    public void setSortingStrategy(SortingStrategy sortingStrategy) {
-        this.sortingStrategy = sortingStrategy;
     }
 }
