@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend.dto.request.UserUpdateRequest;
 import com.example.backend.dto.response.UserResponse;
@@ -19,10 +20,13 @@ import com.example.backend.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
+    private final FileService fileService;
     private final UserRepository repository;
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
     private final PasswordEncoder passwordEncoder;
@@ -74,6 +78,26 @@ public class UserService {
         user = repository.save(user);
 
         return userMapper.toResponse(user);
+    }
+
+    public void updateAvatar(MultipartFile avatar) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
+            throw new IllegalStateException("Authenticated user not found");
+        }
+
+        User user = (User) authentication.getPrincipal();
+
+        try {
+            String avatarUrl = (avatar != null) ? fileService.saveFile(avatar) : null;
+            user.setAvatarUrl(avatarUrl);
+
+            repository.save(user);
+        } catch (Exception e) {
+            log.error("Failed to update avatar: {}", e.getMessage(), e);
+            throw new RuntimeException("Error while updating avatar", e);
+        }
     }
 
     public UserResponse findByEmail(String email) {

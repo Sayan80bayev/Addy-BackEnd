@@ -9,6 +9,9 @@ import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.UUID;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +28,7 @@ public class AuthenticationService {
 
         public JwtResponse register(RegisterRequest request) {
                 var user = User.builder()
+                                .id(UUID.randomUUID())
                                 .name(request.getUsername())
                                 .email(request.getEmail())
                                 .password(passwordEncoder.encode(request.getPassword()))

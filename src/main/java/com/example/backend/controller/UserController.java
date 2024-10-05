@@ -2,14 +2,13 @@ package com.example.backend.controller;
 
 import java.util.UUID;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend.dto.request.UserUpdateRequest;
-import com.example.backend.dto.response.UserResponse;
 import com.example.backend.service.UserService;
 
 import jakarta.validation.constraints.NotBlank;
@@ -42,13 +40,14 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateUser(@RequestPart("user") UserUpdateRequest request) {
+    public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequest request) {
         return ResponseEntity.ok(service.updateUser(request));
     }
 
-    @PutMapping("/avatar/{id}")
+    @PutMapping("/avatar")
     public ResponseEntity<?> updateAvatar(@RequestPart(value = "avatar", required = false) MultipartFile avatar) {
-        return ResponseEntity.ok("");
+        service.updateAvatar(avatar);
+        return ResponseEntity.ok("__SUCCESS__");
     }
 
     // @GetMapping("/getUserAds/{email}")
