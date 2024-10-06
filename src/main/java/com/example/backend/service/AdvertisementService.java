@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -40,7 +42,8 @@ public class AdvertisementService {
     private final NotificationService nService;
 
     public List<AdvertisementResponse> findAll() {
-        List<AdvertisementResponse> ads = repository.findAll().stream().map(mapper::toResponse)
+        List<Advertisement> advertisements = repository.findAll();
+        List<AdvertisementResponse> ads = advertisements.stream().map(mapper::toResponse)
                 .collect(Collectors.toList());
         return ads;
     }
@@ -53,11 +56,7 @@ public class AdvertisementService {
             List<MultipartFile> images) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User userDetails = (User) authentication.getPrincipal();
-        String email = userDetails.getEmail();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User with email: " + email + " not found"));
+        User user = (User) authentication.getPrincipal();
 
         UUID categoryId = advertisementRequest.getCategoryId();
 
@@ -66,15 +65,19 @@ public class AdvertisementService {
 
         Advertisement advertisement = mapper.toEntity(advertisementRequest);
 
-        List<String> imagesUrl = images.stream().map(i -> {
-            try {
-                return fileService.saveFile(i);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }).collect(Collectors.toList());
+        List<String> imagesUrl = (images != null ? images.stream()
+                .map(i -> {
+                    try {
+                        return fileService.saveFile(i);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull) // Filter out null values
+                .collect(Collectors.toList()) : Collections.emptyList()); // Return an empty list if images is null
 
+        advertisement.setId(UUID.randomUUID());
         advertisement.setUser(user);
         advertisement.setCategory(category);
         advertisement.setImage(imagesUrl);

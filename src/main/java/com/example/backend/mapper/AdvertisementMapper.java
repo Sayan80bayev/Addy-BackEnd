@@ -2,6 +2,7 @@ package com.example.backend.mapper;
 
 import com.example.backend.dto.request.AdvertisementRequest;
 import com.example.backend.dto.response.AdvertisementResponse;
+import com.example.backend.dto.response.CategoryResponse;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
 import com.example.backend.model.User;
@@ -13,7 +14,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = CategoryMapper.class)
 public interface AdvertisementMapper {
 
     AdvertisementMapper INSTANCE = Mappers.getMapper(AdvertisementMapper.class);
@@ -29,10 +30,11 @@ public interface AdvertisementMapper {
     // Mapping Advertisement Entity to AdvertisementResponse
     @Mapping(target = "id", source = "advertisement.id")
     @Mapping(target = "email", source = "advertisement.user.email")
-    @Mapping(target = "category", source = "advertisement.category")
+    @Mapping(target = "category", source = "advertisement.category") // This needs a mapping method for Category
     @Mapping(target = "imagesUrl", source = "advertisement.image")
     AdvertisementResponse toResponse(Advertisement advertisement);
 
+    // New mapping method for Category to CategoryResponse
     // Utility methods to map user and category from their IDs
     @Named("mapUserFromId")
     default User mapUserFromId(UUID userId) {

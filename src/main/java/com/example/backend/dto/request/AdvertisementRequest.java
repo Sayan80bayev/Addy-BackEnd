@@ -15,7 +15,5 @@ public class AdvertisementRequest {
     @NotNull
     private Double price;
     @NotNull
-    private UUID userId;
-    @NotNull
     private UUID categoryId;
 }

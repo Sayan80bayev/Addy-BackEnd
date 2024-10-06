@@ -28,7 +28,7 @@ public class AdvertisementController {
 
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<?> saveAdvertisement(@RequestPart("advertisement") AdvertisementRequest aDto,
-            @RequestPart("files") List<MultipartFile> files) {
+            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         return ResponseEntity.ok(service.createAdvertisement(aDto, files));
     }
 

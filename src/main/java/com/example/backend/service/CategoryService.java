@@ -42,6 +42,7 @@ public class CategoryService {
 
     public Category addCategory(CategoryRequest request) {
         var category = categoryMapper.toEntity(request);
+        category.setId(UUID.randomUUID());
         return repository.save(category);
     }
 

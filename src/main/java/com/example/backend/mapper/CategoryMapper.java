@@ -20,11 +20,13 @@ public interface CategoryMapper {
     @Mapping(target = "id", ignore = true) // ID is auto-generated
     @Mapping(target = "subcategories", ignore = true) // Handle subcategories separately if needed
     @Mapping(target = "parent", source = "parentId", qualifiedByName = "mapParentFromId")
+    @Mapping(target = "advertisements", ignore = true)
     Category toEntity(CategoryRequest categoryRequest);
 
     // Mapping Category Entity to CategoryResponse
-    @Mapping(target = "categoryId", source = "category.id")
-    @Mapping(target = "subcategories", source = "category.subcategories")
+    @Mapping(target = "categoryId", source = "id") // Map category's id to categoryId in response
+    @Mapping(target = "subcategories", source = "subcategories")
+    @Mapping(target = "categoryName", source = "name")
     CategoryResponse toResponse(Category category);
 
     // Utility method to map parent from its ID
