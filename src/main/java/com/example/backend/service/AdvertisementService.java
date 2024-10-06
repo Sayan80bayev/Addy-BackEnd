@@ -6,7 +6,6 @@ import com.example.backend.exception.ForbiddenException;
 import com.example.backend.mapper.AdvertisementMapper;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
-import com.example.backend.model.Notification;
 import com.example.backend.model.User;
 import com.example.backend.model.UserSubscription;
 import com.example.backend.repository.AdvertisementRepository;

@@ -5,24 +5,38 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.example.backend.dto.request.SubscribeRequest;
 import com.example.backend.dto.response.UserSubscriptionResponse;
 import com.example.backend.mapper.UserSubscriptionMapper;
 import com.example.backend.model.Advertisement;
+import com.example.backend.model.User;
 import com.example.backend.model.UserSubscription;
+import com.example.backend.repository.AdvertisementRepository;
 import com.example.backend.repository.SubscribtionRepository;
-
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class SubscriptionService {
+    private final AdvertisementRepository advertisementRepository;
     private final SubscribtionRepository repository;
     private final UserSubscriptionMapper mapper = Mappers.getMapper(UserSubscriptionMapper.class);
 
-    public void save(UserSubscription u) {
+    public void subscribeUser(SubscribeRequest request) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Advertisement advertisement = advertisementRepository.findById(request.getId())
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Advertisement with id: " + request.getId() + " not found"));
+
+        User user = (User) authentication.getPrincipal();
+        UserSubscription u = UserSubscription.builder().ad(advertisement).user(user).id(UUID.randomUUID()).build();
+
         repository.save(u);
     }
 
@@ -30,8 +44,12 @@ public class SubscriptionService {
         repository.deleteById(id);
     }
 
-    public void deleteSubs(UUID user_id, UUID id) {
-        repository.deleteSubs(user_id, id);
+    public void deleteSubs(SubscribeRequest request) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
+        repository.deleteSubs(user.getId(), request.getId());
     }
 
     public List<UserSubscriptionResponse> getSubcribtionsByUserID(UUID id) {

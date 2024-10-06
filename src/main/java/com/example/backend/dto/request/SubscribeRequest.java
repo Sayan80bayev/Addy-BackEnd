@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SubcribeRequest {
+public class SubscribeRequest {
     @NonNull
     UUID id;
     @NotBlank
