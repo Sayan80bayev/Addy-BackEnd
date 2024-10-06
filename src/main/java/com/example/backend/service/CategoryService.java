@@ -6,7 +6,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.dto.request.CategoryRequest;
@@ -66,11 +65,15 @@ public class CategoryService {
     }
 
     public List<UUID> findAllChildCategoryIds(UUID parentId) {
+
         List<UUID> childCategoryIds = new ArrayList<>();
         List<Category> childCategories = repository.findByParentId(parentId);
+
         for (Category category : childCategories) {
             childCategoryIds.add(category.getId());
+
             List<UUID> grandChildCategoryIds = findAllChildCategoryIds(category.getId());
+
             childCategoryIds.addAll(grandChildCategoryIds);
         }
         return childCategoryIds;

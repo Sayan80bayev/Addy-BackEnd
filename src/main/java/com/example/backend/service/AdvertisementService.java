@@ -150,7 +150,9 @@ public class AdvertisementService {
     public List<AdvertisementResponse> findByCategoryIdOrChildCategoryIds(UUID categoryId) {
         List<UUID> categoryIds = cService.findAllChildCategoryIds(categoryId);
         categoryIds.add(categoryId);
+
         List<Advertisement> advertisements = repository.findByCategoryIdIn(categoryIds);
+
         return advertisements.stream().map(mapper::toResponse).collect(Collectors.toList());
     }
 

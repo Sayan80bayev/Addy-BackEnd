@@ -1,7 +1,6 @@
 package com.example.backend.service;
 
 import java.util.List;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.config.WebSocketHandler;
