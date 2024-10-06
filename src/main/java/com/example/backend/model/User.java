@@ -26,15 +26,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
-    private UUID id = UUID.randomUUID();
+    private UUID id;
     private String name;
     private String email;
     private String password;
+    private String avatarUrl;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Advertisement> advertisements;
-    private String avatarUrl;
+
     @Enumerated(EnumType.STRING)
     private Role role;
+
     @OneToMany(mappedBy = "user")
     private List<UserSubscription> subscriptions;
 

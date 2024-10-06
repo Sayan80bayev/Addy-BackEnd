@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserSubscription {
     @Id
-    private UUID id = UUID.randomUUID();
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

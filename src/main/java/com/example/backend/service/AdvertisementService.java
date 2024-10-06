@@ -80,7 +80,7 @@ public class AdvertisementService {
         advertisement.setId(UUID.randomUUID());
         advertisement.setUser(user);
         advertisement.setCategory(category);
-        advertisement.setImage(imagesUrl);
+        advertisement.setImagesUrl(imagesUrl);
 
         advertisement = this.save(advertisement);
         return mapper.toResponse(advertisement);
@@ -119,7 +119,7 @@ public class AdvertisementService {
         }).collect(Collectors.toList());
 
         newAdvertisement.setCategory(category);
-        newAdvertisement.setImage(imagesUrl);
+        newAdvertisement.setImagesUrl(imagesUrl);
         newAdvertisement.setSubscriptions(subscribers);
         newAdvertisement = this.save(newAdvertisement);
 

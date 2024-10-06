@@ -18,13 +18,14 @@ import lombok.Data;
 @AllArgsConstructor
 public class Notification {
     @Id
-    private UUID id = UUID.randomUUID();
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    private UUID id;
     private String value;
     private LocalDateTime date;
     private boolean seen;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     Notification() {
         this.date = LocalDateTime.now();
