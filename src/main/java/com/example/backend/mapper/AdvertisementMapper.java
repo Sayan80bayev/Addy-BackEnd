@@ -13,8 +13,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring", uses = CategoryMapper.class)
+@Component
+@Mapper(uses = CategoryMapper.class)
 public interface AdvertisementMapper {
 
     AdvertisementMapper INSTANCE = Mappers.getMapper(AdvertisementMapper.class);
