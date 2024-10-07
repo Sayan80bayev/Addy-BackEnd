@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.mapstruct.factory.Mappers;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,51 +31,44 @@ public class UserService {
     private final UserRepository repository;
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
     private final PasswordEncoder passwordEncoder;
+    private final MessageSource messageSource;
 
     public UserResponse findById(UUID id) {
-
         User user = repository.findById(id).orElse(null);
-        UserResponse userResponse = userMapper.toResponse(user);
-
-        return userResponse;
+        return userMapper.toResponse(user);
     }
 
     public List<UserResponse> findAll() {
-
         List<User> users = repository.findAll();
-        List<UserResponse> userResponses = users.stream().map(u -> userMapper.toResponse(u))
-                .collect(Collectors.toList());
-
-        return userResponses;
+        return users.stream().map(userMapper::toResponse).collect(Collectors.toList());
     }
 
     public UserResponse updateUser(UserUpdateRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         String password = request.getPassword();
-        String confirmPasswrod = request.getConfirmPassword();
+        String confirmPassword = request.getConfirmPassword();
 
-        if (!confirmPasswrod.equals(password))
+        if (!confirmPassword.equals(password)) {
             throw new IllegalArgumentException("Passwords are not equal");
+        }
 
         User userDetails = (User) authentication.getDetails();
         String jwtEmail = userDetails.getEmail();
 
         User user = repository.findByEmail(jwtEmail)
-                .orElseThrow(() -> new EntityNotFoundException("User with email: " + jwtEmail + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        messageSource.getMessage("user.not.found", new Object[] { jwtEmail }, null)));
 
         password = passwordEncoder.encode(password);
-
         String existingPassword = user.getPassword();
         String existingName = user.getName();
 
         if (existingName.equals(request.getUsername()) && existingPassword.equals(password)) {
-            throw new NoChangesException("No changes to update");
+            throw new NoChangesException(messageSource.getMessage("user.no.changes", null, null));
         }
 
         user.setPassword(password);
         user.setName(request.getUsername());
-
         user = repository.save(user);
 
         return userMapper.toResponse(user);
@@ -84,7 +78,7 @@ public class UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
-            throw new IllegalStateException("Authenticated user not found");
+            throw new IllegalStateException(messageSource.getMessage("user.authenticated.not.found", null, null));
         }
 
         User user = (User) authentication.getPrincipal();
@@ -92,20 +86,16 @@ public class UserService {
         try {
             String avatarUrl = (avatar != null) ? fileService.saveFile(avatar) : null;
             user.setAvatarUrl(avatarUrl);
-
             repository.save(user);
         } catch (Exception e) {
             log.error("Failed to update avatar: {}", e.getMessage(), e);
-            throw new RuntimeException("Error while updating avatar", e);
+            throw new RuntimeException(messageSource.getMessage("user.avatar.update.failed", null, null), e);
         }
     }
 
     public UserResponse findByEmail(String email) {
-
         User user = repository.findByEmail(email).orElse(null);
-        UserResponse userResponse = userMapper.toResponse(user);
-
-        return userResponse;
+        return userMapper.toResponse(user);
     }
 
     public boolean saveUser(User user) {
@@ -120,5 +110,4 @@ public class UserService {
     public void deleteUser(UUID id) {
         repository.deleteById(id);
     }
-
 }

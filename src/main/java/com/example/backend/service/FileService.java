@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,10 +17,15 @@ public class FileService {
     @Value("${file.upload-dir}")
     private String uploadDirectory;
 
-    public String saveFile(MultipartFile file) throws IOException {
+    private final MessageSource messageSource;
 
+    public FileService(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    public String saveFile(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
-            throw new IllegalArgumentException("Cannot upload an empty file.");
+            throw new IllegalArgumentException(messageSource.getMessage("file.empty.upload", null, null));
         }
 
         String fileName = file.getOriginalFilename();
@@ -38,12 +44,14 @@ public class FileService {
 
         if (file.exists()) {
             if (file.delete()) {
-                return "File deleted successfully: " + fileName;
+                return messageSource.getMessage("file.delete.success", new Object[] { fileName }, null);
             } else {
-                throw new RuntimeException("Failed to delete file: " + fileName);
+                throw new RuntimeException(
+                        messageSource.getMessage("file.delete.failed", new Object[] { fileName }, null));
             }
         } else {
-            throw new IllegalArgumentException("File not found: " + fileName);
+            throw new IllegalArgumentException(
+                    messageSource.getMessage("file.not.found", new Object[] { fileName }, null));
         }
     }
 }

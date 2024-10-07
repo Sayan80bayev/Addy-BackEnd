@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.mapstruct.factory.Mappers;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.dto.request.CategoryRequest;
@@ -14,11 +15,13 @@ import com.example.backend.mapper.CategoryMapper;
 import com.example.backend.model.Category;
 import com.example.backend.repository.CategoryRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
+    private final MessageSource messageSource;
     private final CategoryRepository repository;
     private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
 
@@ -54,7 +57,8 @@ public class CategoryService {
 
         Category subcategory = categoryMapper.toEntity(subcategoryRequest);
         Category parentCategory = repository.findById(parentId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid parent category ID"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        messageSource.getMessage("invalid.parent.category", null, null)));
 
         subcategory.setParent(parentCategory);
         parentCategory.addSubcategory(subcategory);
