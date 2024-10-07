@@ -10,8 +10,6 @@ import com.example.backend.model.User;
 import com.example.backend.model.UserSubscription;
 import com.example.backend.repository.AdvertisementRepository;
 import com.example.backend.repository.CategoryRepository;
-import com.example.backend.repository.UserRepository;
-
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +32,6 @@ public class AdvertisementService {
     private final AdvertisementMapper mapper = Mappers.getMapper(AdvertisementMapper.class);
 
     private final AdvertisementRepository repository;
-    private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
 
     private final FileService fileService;
@@ -74,8 +71,8 @@ public class AdvertisementService {
                         return null;
                     }
                 })
-                .filter(Objects::nonNull) // Filter out null values
-                .collect(Collectors.toList()) : Collections.emptyList()); // Return an empty list if images is null
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()) : Collections.emptyList());
 
         advertisement.setId(UUID.randomUUID());
         advertisement.setUser(user);
@@ -94,8 +91,8 @@ public class AdvertisementService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User userDetails = (User) authentication.getPrincipal(); // Assume you have UserDetailsImpl
-        String email = userDetails.getEmail(); // Method to retrieve the email from UserDetails
+        User userDetails = (User) authentication.getPrincipal();
+        String email = userDetails.getEmail();
 
         boolean isEmailEqual = email.equals(existingAdvertisement.getUser().getEmail());
 
@@ -109,21 +106,27 @@ public class AdvertisementService {
         Advertisement newAdvertisement = mapper.toEntity(advertisementRequest);
 
         List<UserSubscription> subscribers = existingAdvertisement.getSubscriptions();
-        List<String> imagesUrl = images.stream().map(i -> {
-            try {
-                return fileService.saveFile(i);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }).collect(Collectors.toList());
+        List<String> imagesUrl = (images != null ? images.stream()
+                .map(i -> {
+                    try {
+                        return fileService.saveFile(i);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()) : Collections.emptyList());
 
+        newAdvertisement.setId(advertisementId);
+        newAdvertisement.setUser(userDetails);
         newAdvertisement.setCategory(category);
         newAdvertisement.setImagesUrl(imagesUrl);
         newAdvertisement.setSubscriptions(subscribers);
         newAdvertisement = this.save(newAdvertisement);
 
-        nService.notifySubscribers(email, subscribers);
+        nService.notifySubscribers("Advertisement: " + existingAdvertisement.getTitle() + " has been updated",
+                subscribers);
 
         return mapper.toResponse(newAdvertisement);
     }
