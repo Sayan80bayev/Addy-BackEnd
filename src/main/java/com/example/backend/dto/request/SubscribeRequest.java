@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class SubscribeRequest {
     @NonNull
     UUID id;
-    @NotBlank
+
+    @NotBlank(message = "{subscribeRequest.email.notBlank}")
     String email;
 }

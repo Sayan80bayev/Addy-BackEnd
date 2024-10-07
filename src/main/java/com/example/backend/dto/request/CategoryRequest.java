@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 public class CategoryRequest {
-    @NotBlank
+    @NotBlank(message = "{category.name.notBlank}")
     private String name;
     private UUID parentId;
 }

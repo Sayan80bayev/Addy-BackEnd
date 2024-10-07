@@ -12,8 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JwtRequest {
-    @NotNull
+    @NotNull(message = "{jwtRequest.email.notNull}")
     private String email;
-    @NotBlank
+
+    @NotBlank(message = "{jwtRequest.password.notBlank}")
     private String password;
 }

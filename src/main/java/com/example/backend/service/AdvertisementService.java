@@ -29,151 +29,156 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AdvertisementService {
-    private final AdvertisementMapper mapper = Mappers.getMapper(AdvertisementMapper.class);
+        private final AdvertisementMapper mapper = Mappers.getMapper(AdvertisementMapper.class);
 
-    private final AdvertisementRepository repository;
-    private final CategoryRepository categoryRepository;
+        private final AdvertisementRepository repository;
+        private final CategoryRepository categoryRepository;
 
-    private final FileService fileService;
-    private final CategoryService cService;
-    private final NotificationService nService;
+        private final FileService fileService;
+        private final CategoryService cService;
+        private final NotificationService nService;
 
-    public List<AdvertisementResponse> findAll() {
-        List<Advertisement> advertisements = repository.findAll();
-        List<AdvertisementResponse> ads = advertisements.stream().map(mapper::toResponse)
-                .collect(Collectors.toList());
-        return ads;
-    }
+        public List<AdvertisementResponse> findAll() {
+                List<Advertisement> advertisements = repository.findAll();
+                List<AdvertisementResponse> ads = advertisements.stream().map(mapper::toResponse)
+                                .collect(Collectors.toList());
+                return ads;
+        }
 
-    private Advertisement save(Advertisement advertisement) {
-        return repository.save(advertisement);
-    }
+        private Advertisement save(Advertisement advertisement) {
+                return repository.save(advertisement);
+        }
 
-    public AdvertisementResponse createAdvertisement(AdvertisementRequest advertisementRequest,
-            List<MultipartFile> images) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        public AdvertisementResponse createAdvertisement(AdvertisementRequest advertisementRequest,
+                        List<MultipartFile> images) {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User user = (User) authentication.getPrincipal();
+                User user = (User) authentication.getPrincipal();
 
-        UUID categoryId = advertisementRequest.getCategoryId();
+                UUID categoryId = advertisementRequest.getCategoryId();
 
-        Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new EntityNotFoundException("Category with id: " + categoryId.toString() + " not found"));
+                Category category = categoryRepository.findById(categoryId).orElseThrow(
+                                () -> new EntityNotFoundException(
+                                                "Category with id: " + categoryId.toString() + " not found"));
 
-        Advertisement advertisement = mapper.toEntity(advertisementRequest);
+                Advertisement advertisement = mapper.toEntity(advertisementRequest);
 
-        List<String> imagesUrl = (images != null ? images.stream()
-                .map(i -> {
-                    try {
-                        return fileService.saveFile(i);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()) : Collections.emptyList());
+                List<String> imagesUrl = (images != null ? images.stream()
+                                .map(i -> {
+                                        try {
+                                                return fileService.saveFile(i);
+                                        } catch (IOException e) {
+                                                e.printStackTrace();
+                                                return null;
+                                        }
+                                })
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList()) : Collections.emptyList());
 
-        advertisement.setId(UUID.randomUUID());
-        advertisement.setUser(user);
-        advertisement.setCategory(category);
-        advertisement.setImagesUrl(imagesUrl);
+                advertisement.setId(UUID.randomUUID());
+                advertisement.setUser(user);
+                advertisement.setCategory(category);
+                advertisement.setImagesUrl(imagesUrl);
 
-        advertisement = this.save(advertisement);
-        return mapper.toResponse(advertisement);
-    }
+                advertisement = this.save(advertisement);
+                return mapper.toResponse(advertisement);
+        }
 
-    public AdvertisementResponse updateAdvertisement(AdvertisementRequest advertisementRequest,
-            List<MultipartFile> images, UUID advertisementId) {
+        public AdvertisementResponse updateAdvertisement(AdvertisementRequest advertisementRequest,
+                        List<MultipartFile> images, UUID advertisementId) {
 
-        Advertisement existingAdvertisement = repository.findById(advertisementId).orElseThrow(
-                () -> new EntityNotFoundException("Advertisement with id: " + advertisementId + " not found"));
+                Advertisement existingAdvertisement = repository.findById(advertisementId).orElseThrow(
+                                () -> new EntityNotFoundException(
+                                                "Advertisement with id: " + advertisementId + " not found"));
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User userDetails = (User) authentication.getPrincipal();
-        String email = userDetails.getEmail();
+                User userDetails = (User) authentication.getPrincipal();
+                String email = userDetails.getEmail();
 
-        boolean isEmailEqual = email.equals(existingAdvertisement.getUser().getEmail());
+                boolean isEmailEqual = email.equals(existingAdvertisement.getUser().getEmail());
 
-        if (!isEmailEqual)
-            throw new ForbiddenException("You're not allowed to edit this ad!");
+                if (!isEmailEqual)
+                        throw new ForbiddenException("You're not allowed to edit this ad!");
 
-        UUID categoryId = advertisementRequest.getCategoryId();
-        Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new EntityNotFoundException("Category with id: " + categoryId.toString() + " not found"));
+                UUID categoryId = advertisementRequest.getCategoryId();
+                Category category = categoryRepository.findById(categoryId).orElseThrow(
+                                () -> new EntityNotFoundException(
+                                                "Category with id: " + categoryId.toString() + " not found"));
 
-        Advertisement newAdvertisement = mapper.toEntity(advertisementRequest);
+                Advertisement newAdvertisement = mapper.toEntity(advertisementRequest);
 
-        List<UserSubscription> subscribers = existingAdvertisement.getSubscriptions();
-        List<String> imagesUrl = (images != null ? images.stream()
-                .map(i -> {
-                    try {
-                        return fileService.saveFile(i);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()) : Collections.emptyList());
+                List<UserSubscription> subscribers = existingAdvertisement.getSubscriptions();
+                List<String> imagesUrl = (images != null ? images.stream()
+                                .map(i -> {
+                                        try {
+                                                return fileService.saveFile(i);
+                                        } catch (IOException e) {
+                                                e.printStackTrace();
+                                                return null;
+                                        }
+                                })
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList()) : Collections.emptyList());
 
-        newAdvertisement.setId(advertisementId);
-        newAdvertisement.setUser(userDetails);
-        newAdvertisement.setCategory(category);
-        newAdvertisement.setImagesUrl(imagesUrl);
-        newAdvertisement.setSubscriptions(subscribers);
-        newAdvertisement = this.save(newAdvertisement);
+                newAdvertisement.setId(advertisementId);
+                newAdvertisement.setUser(userDetails);
+                newAdvertisement.setCategory(category);
+                newAdvertisement.setImagesUrl(imagesUrl);
+                newAdvertisement.setSubscriptions(subscribers);
+                newAdvertisement = this.save(newAdvertisement);
 
-        nService.notifySubscribers("Advertisement: " + existingAdvertisement.getTitle() + " has been updated",
-                subscribers);
+                nService.notifySubscribers("Advertisement: " + existingAdvertisement.getTitle() + " has been updated",
+                                subscribers);
 
-        return mapper.toResponse(newAdvertisement);
-    }
+                return mapper.toResponse(newAdvertisement);
+        }
 
-    public AdvertisementResponse findById(UUID id) {
-        Advertisement advertisement = repository.findById(id).orElseThrow();
-        return mapper.toResponse(advertisement);
-    }
+        public AdvertisementResponse findById(UUID id) {
+                Advertisement advertisement = repository.findById(id).orElseThrow();
+                return mapper.toResponse(advertisement);
+        }
 
-    public List<AdvertisementResponse> findByName(String name) {
-        return repository.findByTitle(name).stream().map(a -> mapper.toResponse(a)).collect(Collectors.toList());
-    }
+        public List<AdvertisementResponse> findByName(String name) {
+                return repository.findByTitle(name).stream().map(a -> mapper.toResponse(a))
+                                .collect(Collectors.toList());
+        }
 
-    public List<AdvertisementResponse> findByCategory(UUID id) {
-        return repository.findByCategoryId(id).stream().map(a -> mapper.toResponse(a)).collect(Collectors.toList());
-    }
+        public List<AdvertisementResponse> findByCategory(UUID id) {
+                return repository.findByCategoryId(id).stream().map(a -> mapper.toResponse(a))
+                                .collect(Collectors.toList());
+        }
 
-    public void deleteById(UUID id) {
-        Advertisement add = repository.findById(id).orElse(null);
-        // notifyUsers(add.getTitle());
-        repository.deleteById(id);
-    }
+        public void deleteById(UUID id) {
+                Advertisement add = repository.findById(id)
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                "Advertisment with id: " + id + " does not exist"));
 
-    public List<AdvertisementResponse> findByCategoryIdOrChildCategoryIds(UUID categoryId) {
-        List<UUID> categoryIds = cService.findAllChildCategoryIds(categoryId);
-        categoryIds.add(categoryId);
+                List<UserSubscription> userSubscriptions = add.getSubscriptions();
 
-        List<Advertisement> advertisements = repository.findByCategoryIdIn(categoryIds);
+                nService.notifySubscribers("Advertisement: " + add.getTitle() + " has been deleted", userSubscriptions);
 
-        return advertisements.stream().map(mapper::toResponse).collect(Collectors.toList());
-    }
+                repository.deleteById(id);
+        }
 
-    public List<AdvertisementResponse> findSimilars(UUID catId, double price, UUID id) {
-        Category cat = categoryRepository.findById(catId)
-                .orElseThrow(() -> new EntityNotFoundException("Category with id: " + catId + " not found"));
+        public List<AdvertisementResponse> findByCategoryIdOrChildCategoryIds(UUID categoryId) {
+                List<UUID> categoryIds = cService.findAllChildCategoryIds(categoryId);
+                categoryIds.add(categoryId);
 
-        List<Advertisement> advertisement = repository.findSimilars(cat, price, id);
-        List<AdvertisementResponse> aDtos = advertisement.stream().map(mapper::toResponse).collect(Collectors.toList());
+                List<Advertisement> advertisements = repository.findByCategoryIdIn(categoryIds);
 
-        return aDtos;
-    }
+                return advertisements.stream().map(mapper::toResponse).collect(Collectors.toList());
+        }
 
-    // public void notifyUsers(List<UserSubscription> l, String value) {
-    // for (int i = 0; i < l.size(); i++) {
-    // User cUser = l.get(i).getUser();
-    // nService.save(
-    // Notification.builder().user(cUser).value(value).seen(false).date(LocalDateTime.now()).build());
-    // }
-    // }
+        public List<AdvertisementResponse> findSimilars(UUID catId, double price, UUID id) {
+                Category cat = categoryRepository.findById(catId)
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                "Category with id: " + catId + " not found"));
+
+                List<Advertisement> advertisement = repository.findSimilars(cat, price, id);
+                List<AdvertisementResponse> aDtos = advertisement.stream().map(mapper::toResponse)
+                                .collect(Collectors.toList());
+
+                return aDtos;
+        }
 }
