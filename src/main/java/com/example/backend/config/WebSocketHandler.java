@@ -2,14 +2,13 @@ package com.example.backend.config;
 
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.web.socket.TextMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.PingMessage;
+import org.springframework.web.socket.PongMessage;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,13 +16,13 @@ import java.util.Map;
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
 
-    // Список для хранения активных WebSocket сессий
     private final Map<String, WebSocketSession> userSessions = new HashMap<>();
-    private final ObjectMapper objectMapper = new ObjectMapper(); // Для работы с JSON
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         log.info("Connected: " + session.getId());
+        session.sendMessage(new PingMessage());
     }
 
     @Override
@@ -32,7 +31,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
         log.info("Received: " + payload);
 
         Map<String, String> messageData = objectMapper.readValue(payload, Map.class);
-
         String messageType = messageData.get("type");
         String userId = messageData.get("userId");
 
@@ -51,6 +49,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
         log.info("Disconnected: " + session.getId());
     }
 
+    @Override
+    protected void handlePongMessage(WebSocketSession session, PongMessage message) throws Exception {
+        log.info("Pong received from session: " + session.getId());
+    }
+
     public void sendMessageToUser(String userId, String message) throws Exception {
         WebSocketSession session = userSessions.get(userId);
         if (session != null && session.isOpen()) {
@@ -59,4 +62,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
             log.info("User " + userId + " is not connected.");
         }
     }
+
+    public Map<String, WebSocketSession> getUserSessions() {
+        return this.userSessions;
+    }
+
 }
