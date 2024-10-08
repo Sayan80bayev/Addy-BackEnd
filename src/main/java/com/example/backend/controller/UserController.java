@@ -20,7 +20,10 @@ import com.example.backend.service.UserService;
 
 import jakarta.validation.constraints.NotBlank;
 
-@Validated
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
@@ -28,30 +31,49 @@ public class UserController {
     @Autowired
     private UserService service;
 
+    @Operation(summary = "Get user by email")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping
     public ResponseEntity<?> getUser(@RequestParam @NotBlank String email) {
         return ResponseEntity.ok(service.findByEmail(email));
     }
 
+    @Operation(summary = "Delete user by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @DeleteMapping
     public ResponseEntity<?> deleteUser(@RequestParam UUID id) {
         service.deleteUser(id);
         return ResponseEntity.ok("__SUCCESS__");
     }
 
+    @Operation(summary = "Update user details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PutMapping
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequest request) {
         return ResponseEntity.ok(service.updateUser(request));
     }
 
+    @Operation(summary = "Update user avatar")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Avatar updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PutMapping("/avatar")
     public ResponseEntity<?> updateAvatar(@RequestPart(value = "avatar", required = false) MultipartFile avatar) {
         service.updateAvatar(avatar);
         return ResponseEntity.ok("__SUCCESS__");
     }
-
-    // @GetMapping("/getUserAds/{email}")
-    // public ResponseEntity<?> getUserAds(@PathVariable("email") String email) {
-    // return service.getUserAds(email);
-    // }
 }

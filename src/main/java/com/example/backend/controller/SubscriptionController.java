@@ -15,31 +15,53 @@ import com.example.backend.dto.request.SubscribeRequest;
 import com.example.backend.model.User;
 import com.example.backend.service.SubscriptionService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 @RestController
 @RequestMapping("/subs")
 public class SubscriptionController {
+
     @Autowired
     private SubscriptionService service;
 
+    @Operation(summary = "Subscribe a user to an advertisement")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Subscription successful"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping
     public ResponseEntity<?> subscribe(@RequestBody SubscribeRequest s) {
         service.subscribeUser(s);
-
         return ResponseEntity.ok().body("SUCCESS");
     }
 
+    @Operation(summary = "Unsubscribe a user from an advertisement")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Unsubscription successful"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @DeleteMapping
     public ResponseEntity<?> unSubscribe(@RequestBody SubscribeRequest s) {
         service.deleteSubs(s);
         return ResponseEntity.ok().body("SUCCESS");
     }
 
+    @Operation(summary = "Get subscriptions of the authenticated user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Subscriptions retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping
     public ResponseEntity<?> getSubscribtion() {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
-
         return ResponseEntity.ok().body(service.getSubcribtionsByUserID(currentUser.getId()));
     }
 }
