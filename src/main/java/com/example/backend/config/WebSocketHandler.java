@@ -2,6 +2,8 @@ package com.example.backend.config;
 
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import com.example.backend.model.Notification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
@@ -54,10 +56,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
         log.info("Pong received from session: " + session.getId());
     }
 
-    public void sendMessageToUser(String userId, String message) throws Exception {
+    public void sendMessageToUser(String userId, Notification notification) throws Exception {
         WebSocketSession session = userSessions.get(userId);
         if (session != null && session.isOpen()) {
-            session.sendMessage(new TextMessage(message));
+            session.sendMessage(new TextMessage(notification.toString()));
         } else {
             log.info("User " + userId + " is not connected.");
         }
