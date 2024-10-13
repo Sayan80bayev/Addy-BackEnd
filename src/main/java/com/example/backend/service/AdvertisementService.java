@@ -55,6 +55,7 @@ public class AdvertisementService {
 
         public AdvertisementResponse createAdvertisement(AdvertisementRequest advertisementRequest,
                         List<MultipartFile> images) {
+
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 User user = (User) authentication.getPrincipal();
                 UUID categoryId = advertisementRequest.getCategoryId();
