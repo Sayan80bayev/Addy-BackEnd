@@ -169,27 +169,25 @@ public class AdvertisementService {
                                                 LocaleContextHolder.getLocale())));
 
                 List<Advertisement> advertisement = repository.findSimilars(cat, price, id);
-                List<AdvertisementResponse> aDtos = advertisement.stream().map(mapper::toResponse)
-                                .collect(Collectors.toList());
 
-                return aDtos;
+            return advertisement.stream().map(mapper::toResponse)
+                            .collect(Collectors.toList());
         }
 
         private List<String> processImages(List<MultipartFile> images) {
 
-                List<String> imagesUrl = (images != null ? images.stream()
-                                .map(i -> {
-                                        try {
-                                                return fileService.saveFile(i);
-                                        } catch (IOException e) {
-                                                log.error(e.getMessage());
-                                                e.printStackTrace();
-                                                return null;
-                                        }
-                                })
-                                .filter(Objects::nonNull)
-                                .collect(Collectors.toList()) : Collections.emptyList());
-
-                return imagesUrl;
+            return (images != null ? images.stream()
+                            .map(i -> {
+                                    try {
+                                            return fileService.saveFile(i);
+                                    } catch (IOException e) {
+                                            log.error(e.getMessage());
+                                            return null;
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(e);
+                                    }
+                            })
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList()) : Collections.emptyList());
         }
 }
