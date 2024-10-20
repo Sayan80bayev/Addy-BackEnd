@@ -11,7 +11,9 @@ import org.springframework.data.repository.query.Param;
 import com.example.backend.model.UserSubscription;
 
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface SubscribtionRepository extends JpaRepository<UserSubscription, UUID> {
     @Query("SELECT s FROM UserSubscription s WHERE s.user.id = :id")
     List<UserSubscription> getSubcribtionsByUserID(UUID id);
