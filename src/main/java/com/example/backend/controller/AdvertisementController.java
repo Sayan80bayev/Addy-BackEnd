@@ -3,10 +3,12 @@ package com.example.backend.controller;
 import com.example.backend.dto.request.AdvertisementRequest;
 import com.example.backend.dto.response.AdvertisementResponse;
 import com.example.backend.service.AdvertisementService;
+import com.example.backend.service.impl.AdvertisementServiceImpl;
 
 import java.util.List;
 import java.util.UUID;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,9 +27,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/api/v1/advertisements")
+@RequiredArgsConstructor
 public class AdvertisementController {
-        @Autowired
-        private AdvertisementService service;
+        private final AdvertisementService service;
 
         @Operation(summary = "Save a new advertisement", description = "Creates a new advertisement with the provided data and images.")
         @ApiResponses(value = {

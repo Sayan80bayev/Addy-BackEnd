@@ -1,85 +1,22 @@
 package com.example.backend.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.mapstruct.factory.Mappers;
-import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Service;
-
 import com.example.backend.dto.request.CategoryRequest;
 import com.example.backend.dto.response.CategoryResponse;
-import com.example.backend.mapper.CategoryMapper;
 import com.example.backend.model.Category;
-import com.example.backend.repository.CategoryRepository;
 
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.UUID;
 
-@Service
-@RequiredArgsConstructor
-public class CategoryService {
-    private final MessageSource messageSource;
-    private final CategoryRepository repository;
-    private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
+public interface CategoryService {
+    List<CategoryResponse> findAll();
 
-    public List<CategoryResponse> findAll() {
+    CategoryResponse findById(UUID id);
 
-        List<Category> categories = repository.findAll();
-        List<CategoryResponse> categoryResponses = categories.stream().map(c -> categoryMapper.toResponse(c))
-                .collect(Collectors.toList());
+    Category addCategory(CategoryRequest request);
 
-        return categoryResponses;
-    }
+    void deleteCategory(UUID id);
 
-    public CategoryResponse findById(UUID id) {
+    CategoryResponse addSubcategory(CategoryRequest subcategoryRequest);
 
-        Category category = repository.findById(id).orElse(null);
-        CategoryResponse categoryResponse = categoryMapper.toResponse(category);
-
-        return categoryResponse;
-    }
-
-    public Category addCategory(CategoryRequest request) {
-        var category = categoryMapper.toEntity(request);
-        category.setId(UUID.randomUUID());
-        return repository.save(category);
-    }
-
-    public void deleteCategory(UUID id) {
-        repository.deleteById(id);
-    }
-
-    public CategoryResponse addSubcategory(CategoryRequest subcategoryRequest) {
-        UUID parentId = subcategoryRequest.getParentId();
-
-        Category subcategory = categoryMapper.toEntity(subcategoryRequest);
-        Category parentCategory = repository.findById(parentId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        messageSource.getMessage("invalid.parent.category", null, null)));
-
-        subcategory.setParent(parentCategory);
-        parentCategory.addSubcategory(subcategory);
-
-        CategoryResponse cDto = categoryMapper.toResponse(repository.save(parentCategory));
-
-        return cDto;
-    }
-
-    public List<UUID> findAllChildCategoryIds(UUID parentId) {
-
-        List<UUID> childCategoryIds = new ArrayList<>();
-        List<Category> childCategories = repository.findByParentId(parentId);
-
-        for (Category category : childCategories) {
-            childCategoryIds.add(category.getId());
-
-            List<UUID> grandChildCategoryIds = findAllChildCategoryIds(category.getId());
-
-            childCategoryIds.addAll(grandChildCategoryIds);
-        }
-        return childCategoryIds;
-    }
+    List<UUID> findAllChildCategoryIds(UUID parentId);
 }

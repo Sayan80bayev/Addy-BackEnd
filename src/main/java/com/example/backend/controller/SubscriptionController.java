@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,10 +22,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/api/v1/subs")
+@RequiredArgsConstructor
 public class SubscriptionController {
 
-    @Autowired
-    private SubscriptionService service;
+    private final SubscriptionService service;
 
     @Operation(summary = "Subscribe a user to an advertisement")
     @ApiResponses(value = {
