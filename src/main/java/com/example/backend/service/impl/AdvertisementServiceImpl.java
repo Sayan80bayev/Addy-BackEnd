@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.Authentication;
@@ -34,7 +35,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class AdvertisementServiceImpl implements AdvertisementService {
         private final AdvertisementMapper mapper = Mappers.getMapper(AdvertisementMapper.class);
@@ -44,6 +44,21 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         private final NotificationService nService;
         private final CategoryService cService;
         private final MessageSource messageSource;
+
+        @Autowired
+        public AdvertisementServiceImpl(AdvertisementRepository repository,
+                                        CategoryRepository categoryRepository,
+                                        FileService fileService,
+                                        NotificationService nService,
+                                        CategoryService cService,
+                                        MessageSource messageSource) {
+                this.repository = repository;
+                this.categoryRepository = categoryRepository;
+                this.fileService = fileService;
+                this.nService = nService;
+                this.cService = cService;
+                this.messageSource = messageSource;
+        }
 
         @Override
         public List<AdvertisementResponse> findAll() {
@@ -187,7 +202,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 return newAdvertisement;
         }
 
-        private List<String> processImages(List<MultipartFile> images) {
+        public List<String> processImages(List<MultipartFile> images) {
                 return (images != null ? images.stream()
                         .map(i -> {
                                 try {

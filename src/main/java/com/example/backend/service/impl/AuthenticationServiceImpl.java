@@ -12,6 +12,7 @@ import com.example.backend.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         @Override
         public JwtResponse register(RegisterRequest request) {
-                var user = User.builder()
+                User user = User.builder()
                         .id(UUID.randomUUID())
                         .name(request.getUsername())
                         .email(request.getEmail())
@@ -36,7 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .role(Role.USER)
                         .build();
                 userRepository.save(user);
-                var jwtToken = jwtService.generateToken(user);
+                String jwtToken = jwtService.generateToken(user);
                 return JwtResponse.builder()
                         .token(jwtToken)
                         .build();
@@ -48,10 +49,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         new UsernamePasswordAuthenticationToken(
                                 request.getEmail(),
                                 request.getPassword()));
-                var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-                var jwtToken = jwtService.generateToken(user);
-                return JwtResponse.builder()
-                        .token(jwtToken)
-                        .build();
+
+                User user = userRepository.findByEmail(request.getEmail())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+                String jwtToken = jwtService.generateToken(user);
+
+                JwtResponse response = new JwtResponse();
+                response.setToken(jwtToken);
+                return response;
         }
 }

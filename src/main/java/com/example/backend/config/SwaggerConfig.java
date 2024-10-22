@@ -1,5 +1,6 @@
 package com.example.backend.config;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,8 @@ public class SwaggerConfig implements WebMvcConfigurer {
 
     @Bean
     public OpenAPI api() {
-        return new OpenAPI().servers(List.of(new Server().url("http://localhost:8080")))
+        return new OpenAPI()
+                .servers(Arrays.asList(new Server().url("http://localhost:8080")))
                 .info(new Info().title("My-server"));
     }
 }
