@@ -182,11 +182,9 @@
                     </annotationProcessorPaths>
                     <showWarnings>true</showWarnings>
                     <compilerArgs>
-                        <compilerArgs>
-                            <arg>-Amapstruct.suppressGeneratorTimestamp=true</arg>
-                            <arg>-Amapstruct.suppressGeneratorVersionInfoComment=true</arg>
-                            <arg>-Amapstruct.verbose=true</arg>
-                        </compilerArgs>
+                        <arg>-Amapstruct.suppressGeneratorTimestamp=true</arg>
+                        <arg>-Amapstruct.suppressGeneratorVersionInfoComment=true</arg>
+                        <arg>-Amapstruct.verbose=true</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
