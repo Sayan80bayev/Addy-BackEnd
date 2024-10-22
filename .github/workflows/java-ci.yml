@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -39,7 +39,7 @@ jobs:
 
       - name: Upload test results
         if: always()  # Ensures this runs even if the tests fail
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: test-results
           path: target/surefire-reports  # Adjust the path based on your project structure
