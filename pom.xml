@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.2</version> <!-- Your specified Spring Boot version -->
+        <version>3.3.2</version> <!-- Your specified Spring Boot version -->
         <relativePath/>
     </parent>
     <groupId>com.example</groupId>
@@ -14,7 +14,8 @@
     <description>Demo project for Spring Boot</description>
     <properties>
         <org.mapstruct.version>1.6.2</org.mapstruct.version>
-        <java.version>23</java.version>
+        <java.version>17</java.version>
+        <argLine>-XX:+IgnoreUnrecognizedVMOptions</argLine> <!-- JVM option to suppress sharing warning -->
     </properties>
     <dependencies>
         <dependency>
@@ -164,10 +165,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
                 <configuration>
-                    <source>23</source>
-                    <target>23</target>
+                    <source>17</source>
+                    <target>17</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -180,7 +181,6 @@
                             <version>1.6.2</version>
                         </path>
                     </annotationProcessorPaths>
-                    <showWarnings>true</showWarnings>
                     <compilerArgs>
                         <arg>-Amapstruct.suppressGeneratorTimestamp=true</arg>
                         <arg>-Amapstruct.suppressGeneratorVersionInfoComment=true</arg>
@@ -191,9 +191,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
+                <version>3.5.1</version>
                 <configuration>
-                    <argLine>-javaagent:${settings.localRepository}/org/mockito/mockito-core/5.14.2/mockito-core-5.14.2.jar</argLine>
+                    <argLine>-XX:+UseSerialGC -XX:-UseSharedSpaces</argLine> <!-- Add your JVM options here -->
                 </configuration>
             </plugin>
         </plugins>
