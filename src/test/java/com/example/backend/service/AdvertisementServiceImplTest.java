@@ -2,17 +2,12 @@ package com.example.backend.service;
 
 import com.example.backend.dto.request.AdvertisementRequest;
 import com.example.backend.dto.response.AdvertisementResponse;
-import com.example.backend.exception.ForbiddenException;
 import com.example.backend.mapper.AdvertisementMapper;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
 import com.example.backend.model.User;
-import com.example.backend.model.UserSubscription;
 import com.example.backend.repository.AdvertisementRepository;
 import com.example.backend.repository.CategoryRepository;
-import com.example.backend.service.FileService;
-import com.example.backend.service.NotificationService;
-import com.example.backend.service.CategoryService;
 import com.example.backend.service.impl.AdvertisementServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -141,7 +136,6 @@ public class AdvertisementServiceImplTest {
         });
         assertNotNull(exception);
         verify(advertisementRepository).findById(advertisementId);
-        log.info("Find by ID not found test passed.");
     }
 
     @Test
@@ -181,7 +175,6 @@ public class AdvertisementServiceImplTest {
         // Assert
         verify(advertisementRepository).save(any(Advertisement.class));
         assertNotNull(response);
-        log.info("Update advertisement test passed.");
     }
 
     @Test
@@ -199,7 +192,6 @@ public class AdvertisementServiceImplTest {
         });
         assertNotNull(exception);
         verify(advertisementRepository).findById(advertisementId);
-        log.info("Update advertisement not found test passed.");
     }
 
     @Test
@@ -218,7 +210,6 @@ public class AdvertisementServiceImplTest {
 
         // Assert
         verify(advertisementRepository).deleteById(advertisementId);
-        log.info("Delete advertisement test passed.");
     }
 
     @Test
@@ -233,7 +224,6 @@ public class AdvertisementServiceImplTest {
         });
         assertNotNull(exception);
         verify(advertisementRepository).findById(advertisementId);
-        log.info("Delete advertisement not found test passed.");
     }
 
     @Test
@@ -249,7 +239,6 @@ public class AdvertisementServiceImplTest {
         // Assert
         assertEquals(1, responses.size());
         verify(advertisementRepository).findAll();
-        log.info("Find all advertisements test passed.");
     }
 
     // Add more tests for other methods if needed

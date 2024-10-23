@@ -15,7 +15,6 @@ import com.example.backend.service.FileService;
 import com.example.backend.service.NotificationService;
 import com.example.backend.service.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.mapstruct.factory.Mappers;

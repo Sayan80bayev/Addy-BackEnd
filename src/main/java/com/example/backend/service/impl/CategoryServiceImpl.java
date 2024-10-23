@@ -58,6 +58,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         messageSource.getMessage("invalid.parent.category", null, null)));
 
+        subcategory.setId(UUID.randomUUID());
         subcategory.setParent(parentCategory);
         parentCategory.addSubcategory(subcategory);
 

@@ -9,6 +9,7 @@ import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.AuthenticationService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,7 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         private final AuthenticationManager authenticationManager;
 
         @Override
-        public JwtResponse register(RegisterRequest request) {
+        public JwtResponse register(@Valid RegisterRequest request) {
                 User user = User.builder()
                         .id(UUID.randomUUID())
                         .name(request.getUsername())
@@ -44,7 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         @Override
-        public JwtResponse authenticate(JwtRequest request) {
+        public JwtResponse authenticate(@Valid JwtRequest request) {
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(
                                 request.getEmail(),

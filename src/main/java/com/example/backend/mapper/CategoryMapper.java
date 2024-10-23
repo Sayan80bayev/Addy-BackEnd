@@ -10,9 +10,9 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Mapper
-// @MapperConfig(componentModel = "spring")
 public interface CategoryMapper {
 
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
@@ -24,9 +24,9 @@ public interface CategoryMapper {
     @Mapping(target = "advertisements", ignore = true)
     Category toEntity(CategoryRequest categoryRequest);
 
-    // Mapping Category Entity to CategoryResponse
-    @Mapping(target = "categoryId", source = "id") // Map category's id to categoryId in response
-    @Mapping(target = "subcategories", source = "subcategories")
+    // Mapping Category Entity to CategoryResponse (excluding subcategories to avoid cycles)
+    @Mapping(target = "categoryId", source = "id")
+    @Mapping(target = "subcategories", source = "subcategories", qualifiedByName = "mapSubcategoriesToResponse")
     @Mapping(target = "categoryName", source = "name")
     CategoryResponse toResponse(Category category);
 
@@ -34,11 +34,26 @@ public interface CategoryMapper {
     @Named("mapParentFromId")
     default Category mapParentFromId(UUID parentId) {
         if (parentId == null) {
-            return null; // Handle null case
+            return null;
         }
         Category parentCategory = new Category();
         parentCategory.setId(parentId);
         return parentCategory;
+    }
+
+    // Prevent mapping subcategories recursively by limiting the depth
+    @Named("mapSubcategoriesToResponse")
+    default List<CategoryResponse> mapSubcategoriesToResponse(List<Category> subcategories) {
+        if (subcategories == null) {
+            return null;
+        }
+        return subcategories.stream()
+                .map(subcategory -> CategoryResponse.builder()
+                        .categoryId(subcategory.getId())
+                        .categoryName(subcategory.getName())
+                        // You can choose to omit the parent or other fields here if not needed
+                        .build())
+                .collect(Collectors.toList());
     }
 
     // Mapping for a list of Category to a list of CategoryResponse
