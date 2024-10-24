@@ -68,13 +68,10 @@ public class FileServiceImpl implements FileService {
                             .object(fileName)
                             .build()
             );
-        } catch (MinioException e) {
+        } catch (MinioException | IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(
                     messageSource.getMessage("file.delete.failed", new Object[]{fileName}, null), e);
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException(e);
         }
-
         return messageSource.getMessage("file.delete.success", new Object[]{fileName}, null);
     }
 }
