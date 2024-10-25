@@ -3,14 +3,10 @@ package com.example.backend.model;
 import java.util.*;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.backend.enums.Role;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,7 +15,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @AllArgsConstructor
 @Builder
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "users")
 public class User implements UserDetails {
     @Id

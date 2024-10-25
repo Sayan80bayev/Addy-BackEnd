@@ -4,9 +4,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserUpdateRequest {
     @NotBlank(message = "{userUpdateRequest.email.notBlank}")
     @Email(message = "{userUpdateRequest.email.emailValid}")
