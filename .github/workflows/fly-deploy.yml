@@ -8,6 +8,7 @@ jobs:
     name: Deploy app
     runs-on: ubuntu-latest
     concurrency: deploy-group  # Ensure only one action runs at a time
+    environment: secrets
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
