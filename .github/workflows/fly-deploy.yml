@@ -20,7 +20,7 @@ jobs:
           distribution: 'temurin'  # You can use 'adopt', 'zulu', or other distributions as well
           cache: 'maven'  #
 
-      - name: Build with Maven #guess will work FINAL
+      - name: Build with Maven #guess will work FINAL 2
         run: mvn clean package  # Build the project and create the .jar file
 
       - name: Set up Flyctl
