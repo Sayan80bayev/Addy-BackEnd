@@ -12,10 +12,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK
+      # Setup Java
+      - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
-          java-version: '17'  # Set your Java version here
+          java-version: '17'
+          distribution: 'temurin'  # You can use 'adopt', 'zulu', or other distributions as well
+          cache: 'maven'  #
 
       - name: Build with Maven
         run: mvn clean package  # Build the project and create the .jar file
