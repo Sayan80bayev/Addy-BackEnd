@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for addy-backend on 2024-09-27T18:07:11+05:00
+# fly.toml app configuration file generated for addy-backend-spring on 2024-10-26T08:44:55+05:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'addy-backend'
+app = 'addy-backend-spring'
 primary_region = 'waw'
 
 [build]

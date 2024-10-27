@@ -50,14 +50,12 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
     private User user;
-    private UUID userId;
 
     @BeforeEach
     void setUp() {
         userService = new UserServiceImpl(fileService, repository, passwordEncoder, messageSource);
-        userId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
         user = new User();
         user.setId(userId);
         user.setEmail("test@example.com");
@@ -140,7 +138,7 @@ class UserServiceImplTest {
         when(messageSource.getMessage(any(), any(), any())).thenReturn("File save failed");
 
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> userService.updateAvatar(avatar));
-        assertTrue(thrown.getMessage().equals("File save failed"));
+        assertEquals("File save failed", thrown.getMessage());
         verify(repository, never()).save(any(User.class));
     }
 }

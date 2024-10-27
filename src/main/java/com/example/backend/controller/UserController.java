@@ -29,7 +29,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RequiredArgsConstructor
 public class UserController {
 
-    private UserService service;
+    private final UserService service;
 
     @Operation(summary = "Get user by email")
     @ApiResponses(value = {

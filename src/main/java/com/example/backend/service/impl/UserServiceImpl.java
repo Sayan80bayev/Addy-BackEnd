@@ -108,9 +108,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse findByEmail(String email) {
         return repository.findByEmail(email)
                 .map(userMapper::toResponse)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        messageSource.getMessage("user.not.found", new Object[]{email}, LocaleContextHolder.getLocale())
-                ));
+                .orElse(null);
     }
 
     @Override

@@ -1,35 +1,48 @@
 package com.example.backend.service.impl;
 
 import com.example.backend.service.FileService;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
-import io.minio.errors.MinioException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.net.URI;
+import java.nio.file.Files;
 
 @Service
 public class FileServiceImpl implements FileService {
 
-    @Value("${minio.bucket-name}")
-    private String bucketName;
+    private final String bucketName = System.getProperty("TIGRIS_BUCKET_NAME");
 
-    @Value("${minio.url}")
-    private String minioUrl;
+    private final String s3Url = System.getProperty("TIGRIS_URL");
 
-    private final MinioClient minioClient;
+    private final String accessKey= System.getProperty("TIGRIS_ACCESS_KEY");
+
+    private final String secretKey = System.getProperty("TIGRIS_SECRET_KEY");
+
+    private final S3Client s3Client;
     private final MessageSource messageSource;
 
-    public FileServiceImpl(MinioClient minioClient, MessageSource messageSource) {
-        this.minioClient = minioClient;
+    public FileServiceImpl(MessageSource messageSource) {
         this.messageSource = messageSource;
+
+        // Create S3 client using AWS SDK v2
+        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);
+        this.s3Client = S3Client.builder()
+                .endpointOverride(URI.create(s3Url))
+                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+                .region(Region.of("auto")) // Set your preferred region
+                .build();
     }
 
     @Override
@@ -39,38 +52,39 @@ public class FileServiceImpl implements FileService {
         }
 
         String fileName = file.getOriginalFilename();
+        File tempFile = File.createTempFile("upload-", fileName);
 
-        try (InputStream inputStream = file.getInputStream()) {
-            // Загрузка файла в MinIO
-            minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(bucketName)
-                            .object(fileName)
-                            .stream(inputStream, file.getSize(), -1)
-                            .contentType(file.getContentType())
-                            .build()
-            );
-        } catch (MinioException e) {
-            throw new RuntimeException(
-                    messageSource.getMessage("file.upload.failed", new Object[]{fileName}, null), e);
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            fos.write(file.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(messageSource.getMessage("file.upload.failed", new Object[]{fileName}, null), e);
         }
 
-        // Возвращаем прямую ссылку для доступа к файлу
-        return String.format("%s/%s/%s", minioUrl, bucketName, fileName);
+        try {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .build();
+            s3Client.putObject(putObjectRequest, tempFile.toPath());
+        } catch (S3Exception e) {
+            throw new RuntimeException(messageSource.getMessage("file.upload.failed", new Object[]{fileName}, null), e);
+        } finally {
+            Files.deleteIfExists(tempFile.toPath());
+        }
+
+        return String.format("%s/%s/%s", s3Url, bucketName, fileName);
     }
 
     @Override
     public String deleteFile(String fileName) {
         try {
-            minioClient.removeObject(
-                    RemoveObjectArgs.builder()
-                            .bucket(bucketName)
-                            .object(fileName)
-                            .build()
-            );
-        } catch (MinioException | IOException | NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException(
-                    messageSource.getMessage("file.delete.failed", new Object[]{fileName}, null), e);
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .build();
+            s3Client.deleteObject(deleteObjectRequest);
+        } catch (S3Exception e) {
+            throw new RuntimeException(messageSource.getMessage("file.delete.failed", new Object[]{fileName}, null), e);
         }
         return messageSource.getMessage("file.delete.success", new Object[]{fileName}, null);
     }

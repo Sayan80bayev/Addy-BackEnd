@@ -2,10 +2,9 @@ package com.example.backend.config;
 
 import com.example.backend.repository.UserRepository;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import lombok.AllArgsConstructor;
 
-import org.aspectj.bridge.Message;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,4 +68,9 @@ public class ApplicationConfig {
             }
         };
     }
+    @Bean
+    public Dotenv dotenv() {
+        return Dotenv.load();
+    }
+
 }
