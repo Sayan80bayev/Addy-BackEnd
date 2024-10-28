@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for addy-backend-spring on 2024-10-26T08:44:55+05:00
+# fly.toml app configuration file generated for addy-backend-spring on 2024-10-27T23:56:12+05:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -7,6 +7,16 @@ app = 'addy-backend-spring'
 primary_region = 'waw'
 
 [build]
+
+[env]
+  TIGRIS_ACCESS_KEY='tid_nsSOMbCpsYsXOdtjmmYDUL_sf_dzMBfBMpvZSArLnAjgkgFRJr'
+  TIGRIS_BUCKET_NAME='addy'
+  TIGRIS_SECRET_KEY="tsec_j5ZReSpWN4iAMaRVEKHa0IcTp76vkuBOaj-rMLBm3kExjE4kfX44KNXZs3wfsGtEVGyUzj"
+  TIGRIS_URL='https://fly.storage.tigris.dev'
+
+  DATASOURCE_URL='jdbc:postgresql://ep-noisy-mountain-a2hnr6sf.eu-central-1.aws.neon.tech/sayan'
+  DATASOURCE_USERNAME='sayan_owner'
+  DATASOURCE_PASSWORD='zNuGnFBL0bx9'
 
 [http_service]
   internal_port = 8080

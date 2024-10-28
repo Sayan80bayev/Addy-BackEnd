@@ -1,6 +1,6 @@
 package com.example.backend.service.impl;
-
 import com.example.backend.service.FileService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -22,21 +22,32 @@ import java.nio.file.Files;
 @Service
 public class FileServiceImpl implements FileService {
 
-    private final String bucketName = System.getProperty("TIGRIS_BUCKET_NAME");
+    @Value("${bucketName}")
+    private String bucketName;
 
-    private final String s3Url = System.getProperty("TIGRIS_URL");
+    @Value("${s3Url}")
+    private String s3Url;
 
-    private final String accessKey= System.getProperty("TIGRIS_ACCESS_KEY");
+    @Value("${akey}")
+    private String accessKey;
 
-    private final String secretKey = System.getProperty("TIGRIS_SECRET_KEY");
+    @Value("${skey}")
+    private String secretKey;
 
-    private final S3Client s3Client;
+    private S3Client s3Client;
     private final MessageSource messageSource;
 
     public FileServiceImpl(MessageSource messageSource) {
         this.messageSource = messageSource;
+    }
 
-        // Create S3 client using AWS SDK v2
+    @PostConstruct
+    public void init() {
+        System.out.println("bucketName: " + bucketName);
+        System.out.println("s3Url: " + s3Url);
+        System.out.println("accessKey: " + accessKey);
+        System.out.println("secretKey: " + secretKey);
+
         AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);
         this.s3Client = S3Client.builder()
                 .endpointOverride(URI.create(s3Url))

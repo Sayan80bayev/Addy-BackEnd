@@ -68,9 +68,4 @@ public class ApplicationConfig {
             }
         };
     }
-    @Bean
-    public Dotenv dotenv() {
-        return Dotenv.load();
-    }
-
 }
