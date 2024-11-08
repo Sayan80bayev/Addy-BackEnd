@@ -10,10 +10,13 @@ import java.util.UUID;
 
 public interface UserService {
     UserResponse findById(UUID id);
-    List<UserResponse> findAll();
-    UserResponse updateUser(UserUpdateRequest request);
-    void updateAvatar(MultipartFile avatar);
     UserResponse findByEmail(String email);
-    boolean saveUser(User user);
+    UserResponse updateUser(UserUpdateRequest request);
+
+    List<UserResponse> findAll();
+
+    void updateAvatar(MultipartFile avatar);
     void deleteUser(UUID id);
+
+    boolean saveUser(User user);
 }

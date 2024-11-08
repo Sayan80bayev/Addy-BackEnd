@@ -2,7 +2,6 @@ package com.example.backend.config;
 
 import com.example.backend.repository.UserRepository;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import lombok.AllArgsConstructor;
 
 import org.springframework.context.MessageSource;

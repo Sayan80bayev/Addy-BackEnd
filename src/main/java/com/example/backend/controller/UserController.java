@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,7 +52,7 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<?> deleteUser(@RequestParam UUID id) {
         service.deleteUser(id);
-        return ResponseEntity.ok("__SUCCESS__");
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).build();
     }
 
     @Operation(summary = "Update user details")
@@ -74,6 +75,6 @@ public class UserController {
     @PutMapping("/avatar")
     public ResponseEntity<?> updateAvatar(@RequestPart(value = "avatar", required = false) MultipartFile avatar) {
         service.updateAvatar(avatar);
-        return ResponseEntity.ok("__SUCCESS__");
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).build();
     }
 }

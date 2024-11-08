@@ -24,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final MessageSource messageSource;
     private final CategoryRepository repository;
-    private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
+    private final CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
 
     @Override
     public List<CategoryResponse> findAll() {

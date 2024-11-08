@@ -1,4 +1,5 @@
 package com.example.backend.service.impl;
+
 import com.example.backend.service.FileService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,16 +44,11 @@ public class FileServiceImpl implements FileService {
 
     @PostConstruct
     public void init() {
-        System.out.println("bucketName: " + bucketName);
-        System.out.println("s3Url: " + s3Url);
-        System.out.println("accessKey: " + accessKey);
-        System.out.println("secretKey: " + secretKey);
-
         AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);
         this.s3Client = S3Client.builder()
                 .endpointOverride(URI.create(s3Url))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
-                .region(Region.of("auto")) // Set your preferred region
+                .region(Region.of("auto"))
                 .build();
     }
 
