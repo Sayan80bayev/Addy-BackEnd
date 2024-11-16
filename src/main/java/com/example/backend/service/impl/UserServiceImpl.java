@@ -60,13 +60,11 @@ public class UserServiceImpl implements UserService {
                         messageSource.getMessage("user.not.found", new Object[]{currentUser.getEmail()}, LocaleContextHolder.getLocale())
                 ));
 
-        // Validate password match
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new IllegalArgumentException(
                     messageSource.getMessage("user.password.mismatch", null, LocaleContextHolder.getLocale()));
         }
 
-        // Check for no changes
         boolean isPasswordChanged = !passwordEncoder.matches(request.getPassword(), user.getPassword());
         boolean isUsernameChanged = !user.getName().equals(request.getUsername());
 
@@ -75,7 +73,6 @@ public class UserServiceImpl implements UserService {
                     messageSource.getMessage("user.no.changes", null, LocaleContextHolder.getLocale()));
         }
 
-        // Update user details
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getUsername());
         User updatedUser = repository.save(user);

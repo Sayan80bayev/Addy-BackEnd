@@ -100,8 +100,12 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 Category category = findCategory(advertisementRequest.getCategoryId());
                 List<String> imagesUrl = processImages(images);
 
-                Advertisement newAdvertisement = updateAdvertisementEntity(advertisementRequest, existingAdvertisement,
-                        category, imagesUrl, user);
+                Advertisement newAdvertisement = updateAdvertisementEntity(
+                        advertisementRequest,
+                        existingAdvertisement,
+                        category,
+                        imagesUrl,
+                        user);
                 newAdvertisement = save(newAdvertisement);
 
                 nService.notifySubscribers(messageSource.getMessage(
@@ -207,7 +211,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                                 try {
                                         return fileService.saveFile(i);
                                 } catch (IOException e) {
-                                        log.error("Error saving image: " + e.getMessage());
+                                        log.error("Error saving image: " + e.getMessage(), e);
                                         return null;
                                 } catch (Exception e) {
                                         throw new RuntimeException(e);

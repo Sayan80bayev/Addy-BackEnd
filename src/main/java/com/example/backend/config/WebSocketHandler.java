@@ -1,5 +1,9 @@
 package com.example.backend.config;
 
+import com.example.backend.model.User;
+import lombok.Getter;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -13,12 +17,14 @@ import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.PongMessage;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
 
-    private final Map<String, WebSocketSession> userSessions = new HashMap<>();
+    @Getter
+    private final Map<UUID, WebSocketSession> userSessions = new HashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -34,7 +40,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         Map<String, String> messageData = objectMapper.readValue(payload, Map.class);
         String messageType = messageData.get("type");
-        String userId = messageData.get("userId");
+//        String userId = messageData.get("userId");
+        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) session.getPrincipal();
+        assert token != null;
+
+        User user = (User) token.getPrincipal();
+        UUID userId = user.getId();
 
         if ("register".equals(messageType)) {
             userSessions.put(userId, session);
@@ -63,10 +74,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
         } else {
             log.info("User " + userId + " is not connected.");
         }
-    }
-
-    public Map<String, WebSocketSession> getUserSessions() {
-        return this.userSessions;
     }
 
 }

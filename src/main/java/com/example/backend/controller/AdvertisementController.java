@@ -26,7 +26,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 
-//testing workflow
 @RestController
 @RequestMapping("/api/v1/advertisements")
 @RequiredArgsConstructor
@@ -108,5 +107,10 @@ public class AdvertisementController {
         @GetMapping("/add/{id}")
         public ResponseEntity<?> getAddById(@PathVariable("id") UUID id) {
                 return ResponseEntity.ok(service.findById(id));
+        }
+
+        @GetMapping("/byCategory/{id}")
+        public ResponseEntity<?> getByCategory(@PathVariable("id") UUID id) {
+                return ResponseEntity.ok(service.findByCategoryIdOrChildCategoryIds(id));
         }
 }

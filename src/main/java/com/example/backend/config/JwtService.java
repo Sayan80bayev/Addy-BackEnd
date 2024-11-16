@@ -1,5 +1,6 @@
 package com.example.backend.config;
 
+import com.example.backend.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -31,13 +32,13 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
     public String generateToken(
             Map<String, Object> extraClaims,
-            UserDetails userDetails) {
+            User userDetails) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
@@ -46,6 +47,7 @@ public class JwtService {
                 .claim("authorities", userDetails.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.joining(",")))
+                .claim("id", userDetails.getId())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(getSingInKey(), SignatureAlgorithm.HS256)
