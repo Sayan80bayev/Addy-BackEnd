@@ -1,8 +1,10 @@
 package com.example.backend.service.impl;
 
+import com.example.backend.dto.request.AdvertisementFilterRequest;
 import com.example.backend.dto.request.AdvertisementRequest;
 import com.example.backend.dto.response.AdvertisementResponse;
 import com.example.backend.exception.ForbiddenException;
+import com.example.backend.filter.FilterSpecification;
 import com.example.backend.mapper.AdvertisementMapper;
 import com.example.backend.model.Advertisement;
 import com.example.backend.model.Category;
@@ -21,6 +23,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -43,6 +46,8 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         private final NotificationService nService;
         private final CategoryService cService;
         private final MessageSource messageSource;
+        private final List<FilterSpecification<Advertisement>> filterSpecifications;
+        private final AdvertisementRepository advertisementRepository;
 
         @Autowired
         public AdvertisementServiceImpl(AdvertisementRepository repository,
@@ -50,13 +55,15 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                                         FileService fileService,
                                         NotificationService nService,
                                         CategoryService cService,
-                                        MessageSource messageSource) {
+                                        MessageSource messageSource, List<FilterSpecification<Advertisement>> filterSpecifications, AdvertisementRepository advertisementRepository) {
                 this.repository = repository;
                 this.categoryRepository = categoryRepository;
                 this.fileService = fileService;
                 this.nService = nService;
                 this.cService = cService;
                 this.messageSource = messageSource;
+                this.filterSpecifications = filterSpecifications;
+                this.advertisementRepository = advertisementRepository;
         }
 
         @Override
@@ -149,6 +156,18 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         public List<AdvertisementResponse> findByCategory(UUID id) {
                 return repository.findByCategoryId(id).stream().map(mapper::toResponse)
                         .collect(Collectors.toList());
+        }
+
+        @Override
+        public List<AdvertisementResponse> findByFiler(AdvertisementFilterRequest filterRequest) {
+                Specification<Advertisement> finalSpec = filterSpecifications.stream()
+                        .filter(spec -> spec.isApplicable(filterRequest))
+                        .map(spec -> spec.toSpecification(filterRequest))
+                        .reduce(Specification.where(null), Specification::and);
+
+                List<Advertisement> advertisements = advertisementRepository.findAll(finalSpec);
+
+                return advertisements.stream().map(mapper::toResponse).toList();
         }
 
         @Override

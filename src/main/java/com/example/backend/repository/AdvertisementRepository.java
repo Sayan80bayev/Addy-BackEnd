@@ -6,12 +6,14 @@ import com.example.backend.model.Category;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AdvertisementRepository extends JpaRepository<Advertisement, UUID> {
+    List<Advertisement> findAll(Specification<Advertisement> spec);
     @Query("SELECT a FROM Advertisement a WHERE LOWER(a.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Advertisement> findByTitle(String title);
 
