@@ -23,6 +23,7 @@ public class SecurityConfiguration {
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http.formLogin(form -> form
                                 .loginPage("http://localhost:3000/login")
+                                .loginProcessingUrl("/login")
                                 .permitAll())
                                 .csrf(AbstractHttpConfigurer::disable)
                                 // .cors(cors -> cors)

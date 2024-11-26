@@ -18,6 +18,7 @@ public class AdvertisementResponse {
     private Double price;
     private String title;
     private String description;
+    private String shortUrl;
     private CategoryResponse category;
     private LocalDateTime date;
     private String email;

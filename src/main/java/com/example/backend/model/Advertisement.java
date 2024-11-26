@@ -28,6 +28,7 @@ public class Advertisement {
     private Long views;
     private String title;
     private String description;
+    private String shortUrl;
     private Double price;
     private LocalDateTime date;
     private List<String> imagesUrl;

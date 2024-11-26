@@ -33,19 +33,6 @@ public interface AdvertisementMapper {
     @Mapping(target = "email", source = "advertisement.user.email")
     @Mapping(target = "category", source = "advertisement.category")
     @Mapping(target = "imagesUrl", source = "advertisement.imagesUrl")
+    @Mapping(target = "shortUrl", source = "advertisement.shortUrl")
     AdvertisementResponse toResponse(Advertisement advertisement);
-
-    @Named("mapUserFromId")
-    default User mapUserFromId(UUID userId) {
-        User user = new User();
-        user.setId(userId);
-        return user;
-    }
-
-    @Named("mapCategoryFromId")
-    default Category mapCategoryFromId(UUID categoryId) {
-        Category category = new Category();
-        category.setId(categoryId);
-        return category;
-    }
 }

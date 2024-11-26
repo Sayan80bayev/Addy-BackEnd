@@ -16,6 +16,7 @@ import com.example.backend.service.AdvertisementService;
 import com.example.backend.service.FileService;
 import com.example.backend.service.NotificationService;
 import com.example.backend.service.CategoryService;
+import com.example.backend.service.messaging.MessageProducer;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,6 +49,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         private final MessageSource messageSource;
         private final List<FilterSpecification<Advertisement>> filterSpecifications;
         private final AdvertisementRepository advertisementRepository;
+        private final MessageProducer messageProducer;
 
         @Autowired
         public AdvertisementServiceImpl(AdvertisementRepository repository,
@@ -55,7 +57,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                                         FileService fileService,
                                         NotificationService nService,
                                         CategoryService cService,
-                                        MessageSource messageSource, List<FilterSpecification<Advertisement>> filterSpecifications, AdvertisementRepository advertisementRepository) {
+                                        MessageSource messageSource,
+                                        List<FilterSpecification<Advertisement>> filterSpecifications,
+                                        AdvertisementRepository advertisementRepository,
+                                        MessageProducer messageProducer) {
                 this.repository = repository;
                 this.categoryRepository = categoryRepository;
                 this.fileService = fileService;
@@ -64,6 +69,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 this.messageSource = messageSource;
                 this.filterSpecifications = filterSpecifications;
                 this.advertisementRepository = advertisementRepository;
+                this.messageProducer = messageProducer;
         }
 
         @Override
@@ -85,6 +91,9 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 List<String> imagesUrl = processImages(images);
 
                 Advertisement advertisement = createAdvertisementEntity(advertisementRequest, user, category, imagesUrl);
+                String url = messageProducer.getShortUrl(advertisement.getId());
+
+                advertisement.setShortUrl(url);
                 advertisement = save(advertisement);
 
                 return mapper.toResponse(advertisement);
