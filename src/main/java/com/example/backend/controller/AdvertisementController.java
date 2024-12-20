@@ -72,7 +72,7 @@ public class AdvertisementController {
 
         @Operation(summary = "Get all advertisements", description = "Returns a list of all advertisements.")
         @ApiResponse(responseCode = "200", description = "List of advertisements successfully retrieved")
-        @GetMapping("/getAll")
+        @GetMapping
         public List<AdvertisementResponse> getAdds() {
                 return service.findAll();
         }
@@ -116,7 +116,7 @@ public class AdvertisementController {
                 return ResponseEntity.ok(service.findByCategoryIdOrChildCategoryIds(id));
         }
         @GetMapping("/filtered")
-        public ResponseEntity<?> getByCategory(@RequestBody AdvertisementFilterRequest advertisementRequest) {
+        public ResponseEntity<?> getByFilter(@RequestBody AdvertisementFilterRequest advertisementRequest) {
                 return ResponseEntity.ok(service.findByFiler(advertisementRequest));
         }
 }
