@@ -18,7 +18,7 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, UU
     List<Advertisement> findByTitle(String title);
 
     @Query("SELECT a FROM Advertisement a WHERE a.price <= :price * 2 AND a.category = :cat AND a.id != :id")
-    List<Advertisement> findSimilars(Category cat, double price, UUID id);
+    List<Advertisement> findSimilars(Category cat, Double price, UUID id);
 
     List<Advertisement> findByCategoryId(UUID id);
 

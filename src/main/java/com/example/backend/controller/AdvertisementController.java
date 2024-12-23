@@ -6,6 +6,7 @@ import com.example.backend.dto.response.AdvertisementResponse;
 import com.example.backend.service.AdvertisementService;
 import com.example.backend.service.impl.AdvertisementServiceImpl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -90,7 +91,7 @@ public class AdvertisementController {
         @Operation(summary = "Get similar advertisements", description = "Returns a list of similar advertisements based on category, price, and ID.")
         @GetMapping("/similars")
         public List<AdvertisementResponse> getSimilars(@RequestParam("cat") UUID catId,
-                        @RequestParam("price") double price,
+                        @RequestParam("price") Double price,
                         @RequestParam("id") UUID id) {
                 return service.findSimilars(catId, price, id);
         }
@@ -115,8 +116,24 @@ public class AdvertisementController {
         public ResponseEntity<?> getByCategory(@PathVariable("id") UUID id) {
                 return ResponseEntity.ok(service.findByCategoryIdOrChildCategoryIds(id));
         }
+
         @GetMapping("/filtered")
-        public ResponseEntity<?> getByFilter(@RequestBody AdvertisementFilterRequest advertisementRequest) {
-                return ResponseEntity.ok(service.findByFiler(advertisementRequest));
+        public ResponseEntity<?> getByFilter(
+                @RequestParam(required = false) UUID categoryId,
+                @RequestParam(required = false) LocalDateTime createdAfter,
+                @RequestParam(required = false) LocalDateTime createdBefore,
+                @RequestParam(required = false) Double minPrice,
+                @RequestParam(required = false) Double maxPrice) {
+
+                // Create a filter object
+                AdvertisementFilterRequest filterRequest = new AdvertisementFilterRequest();
+                filterRequest.setCategoryId(categoryId);
+                filterRequest.setCreatedAfter(createdAfter);
+                filterRequest.setCreatedBefore(createdBefore);
+                filterRequest.setMinPrice(minPrice);
+                filterRequest.setMaxPrice(maxPrice);
+
+                // Pass the filter request to the service method
+                return ResponseEntity.ok(service.findByFiler(filterRequest));
         }
 }

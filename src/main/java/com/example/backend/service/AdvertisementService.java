@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface AdvertisementService {
     List<AdvertisementResponse> findAll();
     List<AdvertisementResponse> findByCategoryIdOrChildCategoryIds(UUID categoryId);
-    List<AdvertisementResponse> findSimilars(UUID catId, double price, UUID id);
+    List<AdvertisementResponse> findSimilars(UUID catId, Double price, UUID id);
     List<AdvertisementResponse> findByName(String name);
     List<AdvertisementResponse> findByCategory(UUID id) ;
     List<AdvertisementResponse> findByFiler(AdvertisementFilterRequest advertisementRequest);

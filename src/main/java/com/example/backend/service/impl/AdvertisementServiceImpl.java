@@ -190,7 +190,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         }
 
         @Override
-        public List<AdvertisementResponse> findSimilars(UUID catId, double price, UUID id) {
+        public List<AdvertisementResponse> findSimilars(UUID catId, Double price, UUID id) {
                 Category category = findCategory(catId);
                 List<Advertisement> advertisements = repository.findSimilars(category, price, id);
 
