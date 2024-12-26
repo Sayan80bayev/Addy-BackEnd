@@ -75,7 +75,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         @Override
         public List<AdvertisementResponse> findAll() {
                 List<Advertisement> advertisements = repository.findAll();
-                return advertisements.stream().map(mapper::toResponse).collect(Collectors.toList());
+                return advertisements.stream().map(mapper::toResponse).toList();
         }
 
         @Override
@@ -227,6 +227,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 Advertisement newAdvertisement = mapper.toEntity(request);
                 newAdvertisement.setId(existingAdvertisement.getId());
                 newAdvertisement.setUser(user);
+                newAdvertisement.setShortUrl(existingAdvertisement.getShortUrl());
                 newAdvertisement.setCategory(category);
                 newAdvertisement.setImagesUrl(imagesUrl);
                 newAdvertisement.setSubscriptions(existingAdvertisement.getSubscriptions());

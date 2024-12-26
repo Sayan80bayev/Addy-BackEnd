@@ -22,7 +22,7 @@ public class MessageProducerImpl implements MessageProducer {
     @Override
     public String getShortUrl(UUID uuid) {
 
-        String message = baseUrl + "/api/v1/advertisements/add/" + uuid.toString();
+        String message = baseUrl + "/view/" + uuid.toString();
 
         try {
             Object result = rabbitTemplate.convertSendAndReceive(
