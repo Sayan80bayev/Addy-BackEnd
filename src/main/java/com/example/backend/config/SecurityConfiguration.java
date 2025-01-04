@@ -29,11 +29,11 @@ public class SecurityConfiguration {
                                 // .cors(cors -> cors)
                                 .authorizeHttpRequests(authz -> authz
                                         .requestMatchers("/ws/**").authenticated()
-                                                // .requestMatchers("/api/cat/**").hasAuthority("ADMIN")
-                                                // .requestMatchers("/api/secured/**").authenticated()
-                                                // .requestMatchers("/api/v1/public/**").permitAll()
-                                                // .requestMatchers("/api/v1/auth/**").permitAll()
-                                                // .requestMatchers("/user/get/**").permitAll()
+                                                 .requestMatchers("/api/cat/**").hasAuthority("ADMIN")
+                                                 .requestMatchers("/api/secured/**").authenticated()
+                                                 .requestMatchers("/api/v1/public/**").permitAll()
+                                                 .requestMatchers("/api/v1/auth/**").permitAll()
+                                                 .requestMatchers("/user/get/**").permitAll()
                                                 .anyRequest().permitAll())
                                 .sessionManagement(
                                                 (sessionManagement) -> sessionManagement
